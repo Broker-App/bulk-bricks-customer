@@ -1,0 +1,14 @@
+{
+  "name": "Bulk Bricks — Find Properties",
+  "short_name": "BulkBricks",
+  "description": "Discover verified properties from trusted builders",
+  "theme_color": "#C1440E",
+  "background_color": "#F7F4F0",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [],
+  "categories": ["business", "lifestyle"],
+  "lang": "en"
+}
