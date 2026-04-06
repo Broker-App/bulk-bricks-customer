@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MessageCircle, ChevronDown, ChevronUp, MapPin, Clock } from 'lucide-react';
+import { MessageCircle, ChevronDown, ChevronUp, MapPin, Clock, Inbox } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Chip } from '@/components/ui/Chip';
 import { Avatar } from '@/components/ui/Avatar';
 import { truncate } from '@/utils/format';
-import type { Query, QueryResponse } from '@/types';
+import type { Query } from '@/types';
 
 const STATUS_VARIANT: Record<string, string> = {
   open:        'featured',
@@ -25,9 +25,9 @@ const PRIORITY_COLOR: Record<string, string> = {
 };
 
 export default function MyQueriesPage() {
-  const [queries, setQueries] = useState<Query[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [queries, setQueries]     = useState<Query[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [userId, setUserId]       = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,152 +52,271 @@ export default function MyQueriesPage() {
     });
   }, []);
 
+  /* ── Not logged in ─────────────────────────────────────────────────────── */
   if (!loading && !userId) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', padding: '64px 24px', textAlign: 'center',
-        background: 'var(--color-canvas)', minHeight: '100dvh' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '16px' }}>💬</div>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700,
-          color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-          Login to View Your Queries
-        </h1>
-        <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px', maxWidth: '320px' }}>
-          Sign in to track your inquiries and builder responses.
-        </p>
-        <Link href="/auth/login" className="btn-terra" style={{ padding: '12px 28px', textDecoration: 'none' }}>
-          Sign In
-        </Link>
+      <div style={{ background: 'var(--color-canvas)', minHeight: '100dvh' }}>
+        <div style={{
+          background: 'linear-gradient(135deg, var(--color-terra) 0%, #7a2200 100%)',
+          padding: '48px 24px 88px',
+        }} />
+        <div style={{ maxWidth: '480px', margin: '-48px auto 0', padding: '0 24px 56px' }}>
+          <div style={{
+            background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)',
+            border: '1px solid var(--color-border-subtle)', boxShadow: 'var(--shadow-card)',
+            padding: '48px 32px', textAlign: 'center',
+          }}>
+            <div style={{
+              width: '64px', height: '64px', borderRadius: '50%',
+              background: 'var(--color-terra-muted)', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
+            }}>
+              <MessageCircle size={28} color="var(--color-terra)" strokeWidth={1.5} />
+            </div>
+            <h1 style={{
+              fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700,
+              color: 'var(--color-text-primary)', marginBottom: '8px',
+            }}>Sign in to view your queries</h1>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px', fontSize: '0.875rem', lineHeight: 1.7 }}>
+              Track your tickets and builder responses in one place.
+            </p>
+            <Link href="/auth/login" className="btn-terra" style={{ padding: '12px 32px', textDecoration: 'none' }}>
+              Sign In
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ background: 'var(--color-canvas)', minHeight: '100dvh', padding: '24px 16px 40px' }}>
-      <p className="section-label" style={{ marginBottom: '4px' }}>Your Inquiries</p>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700,
-        color: 'var(--color-text-primary)', margin: '0 0 24px', letterSpacing: '-0.02em' }}>
-        My Queries
-      </h1>
+    <div style={{ background: 'var(--color-canvas)', minHeight: '100dvh' }}>
 
-      {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {[1, 2, 3].map(i => (
-            <div key={i} className="skeleton" style={{ height: '120px', borderRadius: 'var(--radius-lg)' }} />
-          ))}
-        </div>
-      ) : queries.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '64px 24px' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📭</div>
-          <p style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-            No queries yet
+      {/* ── Hero banner ──────────────────────────────────────────────────── */}
+      <div style={{
+        background: 'linear-gradient(135deg, var(--color-terra) 0%, #7a2200 100%)',
+        padding: '48px 24px 88px',
+      }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <p style={{
+            color: 'rgba(255,255,255,0.6)', fontSize: '0.72rem', fontWeight: 700,
+            letterSpacing: '0.12em', textTransform: 'uppercase', margin: '0 0 6px',
+          }}>
+            Your Inquiries
           </p>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px', fontSize: '0.9rem' }}>
-            Contact a builder from any property listing to send an inquiry.
-          </p>
-          <Link href="/properties" className="btn-terra" style={{ padding: '12px 28px', textDecoration: 'none' }}>
-            Browse Properties
-          </Link>
+          <h1 style={{
+            fontFamily: 'var(--font-display)', fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
+            fontWeight: 700, color: '#FFFFFF', margin: 0, letterSpacing: '-0.02em',
+          }}>
+            My Queries
+          </h1>
         </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {queries.map(q => {
-            const publicResponses = (q.responses ?? []).filter(r => !r.is_internal);
-            const isExpanded = expandedId === q.id;
+      </div>
 
-            return (
-              <div key={q.id} className="pwa-card" style={{ padding: '16px' }}>
-                {/* Header row */}
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '10px' }}>
-                  {q.builder && (
-                    <Avatar
-                      name={q.builder.company_name}
-                      src={q.builder.logo_url}
-                      size="sm"
-                    />
-                  )}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
-                      <span style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--color-text-primary)' }}>
+      {/* ── Content pulls up into hero ────────────────────────────────────── */}
+      <div style={{ maxWidth: '1100px', margin: '-48px auto 0', padding: '0 20px 64px' }}>
+
+        {/* ── Loading skeletons ── */}
+        {loading && (
+          <div className="queries-grid">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="skeleton" style={{ height: '160px', borderRadius: 'var(--radius-xl)' }} />
+            ))}
+          </div>
+        )}
+
+        {/* ── Empty state ── */}
+        {!loading && queries.length === 0 && (
+          <div style={{
+            background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)',
+            border: '1px solid var(--color-border-subtle)', boxShadow: 'var(--shadow-card)',
+            padding: '56px 32px', textAlign: 'center',
+          }}>
+            <div style={{
+              width: '68px', height: '68px', borderRadius: '50%',
+              background: 'var(--color-terra-muted)', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
+            }}>
+              <Inbox size={30} color="var(--color-terra)" strokeWidth={1.5} />
+            </div>
+            <p style={{
+              fontFamily: 'var(--font-display)', fontWeight: 700,
+              fontSize: '1.125rem', color: 'var(--color-text-primary)', marginBottom: '8px',
+            }}>
+              No queries yet
+            </p>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '28px', fontSize: '0.875rem', lineHeight: 1.7 }}>
+              Visit a property listing and raise a ticket if you have any issues or questions.
+            </p>
+            <Link href="/properties" className="btn-terra" style={{ padding: '12px 28px', textDecoration: 'none' }}>
+              Browse Properties
+            </Link>
+          </div>
+        )}
+
+        {/* ── Query cards grid ── */}
+        {!loading && queries.length > 0 && (
+          <div className="queries-grid">
+            {queries.map(q => {
+              const publicResponses = (q.responses ?? []).filter(r => !r.is_internal);
+              const isExpanded = expandedId === q.id;
+              const hasUnread  = publicResponses.length > 0;
+
+              return (
+                <div
+                  key={q.id}
+                  style={{
+                    background: 'var(--color-surface)',
+                    borderRadius: 'var(--radius-xl)',
+                    border: `1px solid ${hasUnread && !isExpanded ? 'var(--color-terra-border)' : 'var(--color-border-subtle)'}`,
+                    boxShadow: 'var(--shadow-card)',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'box-shadow 0.2s ease',
+                  }}
+                >
+                  {/* ── Card header ── */}
+                  <div style={{
+                    padding: '16px 18px',
+                    borderBottom: '1px solid var(--color-border-subtle)',
+                    background: 'linear-gradient(160deg, var(--color-terra-muted) 0%, var(--color-surface-2) 100%)',
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                  }}>
+                    {q.builder && (
+                      <Avatar name={q.builder.company_name} src={q.builder.logo_url} size="sm" />
+                    )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{
+                        fontWeight: 700, fontSize: '0.9375rem',
+                        color: 'var(--color-text-primary)',
+                        display: 'block', overflow: 'hidden',
+                        textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>
                         {q.builder?.company_name ?? 'Builder'}
                       </span>
+                      {q.property && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginTop: '2px' }}>
+                          <MapPin size={11} color="var(--color-text-muted)" />
+                          <Link href={`/properties/${q.property.id}`} style={{
+                            color: 'var(--color-terra)', textDecoration: 'none',
+                            fontWeight: 600, fontSize: '0.75rem',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>
+                            {q.property.title}
+                          </Link>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                            · {q.property.location_city}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {/* Date */}
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '3px',
+                      color: 'var(--color-text-muted)', fontSize: '0.72rem', flexShrink: 0,
+                    }}>
+                      <Clock size={11} />
+                      {new Date(q.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    </div>
+                  </div>
+
+                  {/* ── Card body ── */}
+                  <div style={{ padding: '14px 18px', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+                    {/* Status + priority chips */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                       <Chip variant={STATUS_VARIANT[q.status] as 'featured' | 'group' | 'verified' | 'sold' ?? 'type'}>
                         {q.status.replace('_', ' ')}
                       </Chip>
                       {q.priority !== 'low' && (
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: PRIORITY_COLOR[q.priority],
-                          textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        <span style={{
+                          fontSize: '0.6875rem', fontWeight: 700,
+                          color: PRIORITY_COLOR[q.priority],
+                          textTransform: 'uppercase', letterSpacing: '0.06em',
+                        }}>
                           {q.priority}
                         </span>
                       )}
                     </div>
-                    {q.property && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px',
-                        color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
-                        <MapPin size={11} />
-                        <Link href={`/properties/${q.property.id}`}
-                          style={{ color: 'var(--color-terra)', textDecoration: 'none', fontWeight: 600 }}>
-                          {q.property.title}
-                        </Link>
-                        <span>· {q.property.location_city}</span>
+
+                    {/* Message */}
+                    <p style={{
+                      fontSize: '0.875rem', color: 'var(--color-text-secondary)',
+                      lineHeight: 1.65, margin: 0,
+                      flex: isExpanded ? undefined : 1,
+                    }}>
+                      {isExpanded ? q.message : truncate(q.message, 100)}
+                    </p>
+
+                    {/* Expanded replies thread */}
+                    {isExpanded && publicResponses.length > 0 && (
+                      <div style={{
+                        borderLeft: '3px solid var(--color-terra-border)',
+                        paddingLeft: '14px',
+                        display: 'flex', flexDirection: 'column', gap: '12px',
+                      }}>
+                        {publicResponses.map(r => (
+                          <div key={r.id}>
+                            <p style={{
+                              fontSize: '0.72rem', color: 'var(--color-text-muted)',
+                              marginBottom: '4px', fontWeight: 600,
+                            }}>
+                              Builder replied ·{' '}
+                              {new Date(r.created_at).toLocaleDateString('en-IN', {
+                                day: 'numeric', month: 'short', year: 'numeric',
+                              })}
+                            </p>
+                            <p style={{
+                              fontSize: '0.875rem', color: 'var(--color-text-primary)',
+                              lineHeight: 1.65, margin: 0,
+                            }}>
+                              {r.message}
+                            </p>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px',
-                    color: 'var(--color-text-muted)', fontSize: '0.75rem', flexShrink: 0 }}>
-                    <Clock size={11} />
-                    {new Date(q.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+
+                  {/* ── Card footer / expand toggle ── */}
+                  <div style={{
+                    padding: '10px 18px 14px',
+                    borderTop: '1px solid var(--color-border-subtle)',
+                  }}>
+                    <button
+                      onClick={() => setExpandedId(isExpanded ? null : q.id)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                        color: 'var(--color-terra)', fontSize: '0.8125rem', fontWeight: 600,
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >
+                      {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      {isExpanded
+                        ? 'Show less'
+                        : publicResponses.length > 0
+                          ? `${publicResponses.length} repl${publicResponses.length === 1 ? 'y' : 'ies'}`
+                          : 'Show full message'}
+                      {publicResponses.length > 0 && !isExpanded && (
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          width: '18px', height: '18px', borderRadius: '50%',
+                          background: 'var(--color-terra)', color: '#fff',
+                          fontSize: '10px', fontWeight: 700,
+                        }}>
+                          {publicResponses.length}
+                        </span>
+                      )}
+                    </button>
                   </div>
                 </div>
-
-                {/* Message preview */}
-                <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)',
-                  lineHeight: 1.6, marginBottom: '10px' }}>
-                  {isExpanded ? q.message : truncate(q.message, 120)}
-                </p>
-
-                {/* Responses thread */}
-                {isExpanded && publicResponses.length > 0 && (
-                  <div style={{ marginBottom: '12px', paddingLeft: '12px',
-                    borderLeft: '2px solid var(--color-terra-border)' }}>
-                    {publicResponses.map(r => (
-                      <div key={r.id} style={{ marginBottom: '10px' }}>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
-                          Builder replied · {new Date(r.created_at).toLocaleDateString('en-IN',
-                            { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </p>
-                        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-primary)', lineHeight: 1.6 }}>
-                          {r.message}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Expand toggle + reply count */}
-                <button
-                  onClick={() => setExpandedId(isExpanded ? null : q.id)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px',
-                    background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                    color: 'var(--color-terra)', fontSize: '0.8125rem', fontWeight: 600,
-                    WebkitTapHighlightColor: 'transparent' }}
-                >
-                  {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                  {isExpanded ? 'Show less' : publicResponses.length > 0
-                    ? `${publicResponses.length} reply` : 'Show full message'}
-                  {publicResponses.length > 0 && !isExpanded && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      width: '18px', height: '18px', borderRadius: '50%', background: 'var(--color-terra)',
-                      color: '#fff', fontSize: '10px', fontWeight: 700 }}>
-                      {publicResponses.length}
-                    </span>
-                  )}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export async function fetchProperties(filters: PropertyFilters = {}) {
     .select(
       `
       id, title, description, category, status,
-      target_price, location_city, location_area,
+      target_price, dev_price, location_city, location_area,
       is_featured, is_group_enabled, group_size, slots_filled,
       created_at,
       builder:builders(id, company_name, logo_url, status),
@@ -79,7 +79,7 @@ export async function fetchMyProperties(customerId: string) {
       `
       id, granted_at,
       property:properties(
-        id, title, target_price, location_city, location_area,
+        id, title, target_price, dev_price, location_city, location_area,
         whatsapp_group_link, status,
         builder:builders(company_name, logo_url, status),
         images:property_images(url, is_cover)

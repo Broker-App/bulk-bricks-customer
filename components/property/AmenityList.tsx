@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Layers } from 'lucide-react';
 import type { Amenity } from '@/types';
 
 interface AmenityListProps {
@@ -40,7 +41,13 @@ export function AmenityList({ amenities }: AmenityListProps) {
               <Image src={amenity.icon_url} alt={amenity.title} width={24} height={24}
                 style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
             ) : (
-              <span style={{ fontSize: '1.25rem' }}>🏠</span>
+              <div style={{
+                width: '24px', height: '24px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'var(--color-text-muted)',
+              }}>
+                <Layers size={20} strokeWidth={1.5} />
+              </div>
             )}
             <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-text-secondary)',
               lineHeight: 1.3 }}>

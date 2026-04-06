@@ -660,6 +660,168 @@ body {
   }
 }
 
+/* ── Property Detail Page ─────────────────────────────────────────── */
 
+/* Mobile: everything stacked, sticky CTA at bottom */
+.property-detail-layout {
+  grid-template-columns: 1fr;
+}
 
+/* .property-gallery-wrap — full bleed on mobile, no extra styles needed */
 
+.property-content-pad {
+  padding: 20px 16px 32px;
+}
+
+/* Sidebar hidden on mobile */
+.property-sidebar {
+  display: none;
+}
+
+/* Sticky bottom CTA shown on mobile */
+.property-cta-sticky {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 80;
+  background: var(--color-canvas);
+  border-top: 1px solid var(--color-border-subtle);
+  padding: 10px 16px 20px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.06);
+}
+
+/* Inline CTA inside content — hidden on mobile (sticky bar handles it) */
+.property-cta-mobile {
+  display: block;
+}
+
+/* Extra page bottom padding for mobile sticky bar */
+.property-detail-layout {
+  padding-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  /* Two-column layout: left content + right sticky sidebar */
+  .property-detail-layout {
+    grid-template-columns: 1fr 380px;
+    gap: 40px;
+    align-items: start;
+    padding: 0 32px 80px;
+  }
+
+  /* Gallery spans full width above the grid on desktop */
+  .property-gallery-wrap {
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-card-hover);
+    margin-bottom: 0;
+  }
+
+  /* More generous content padding on desktop */
+  .property-content-pad {
+    padding: 32px 0 0;
+  }
+
+  /* Show sidebar on desktop */
+  .property-sidebar {
+    display: block;
+  }
+
+  /* Hide sticky bottom bar on desktop */
+  .property-cta-sticky {
+    display: none !important;
+  }
+
+  /* Hide inline CTA on desktop (sidebar has it) */
+  .property-cta-mobile {
+    display: none !important;
+  }
+
+  /* Hide mobile-only price + builder sections on desktop */
+  .detail-price-mobile {
+    display: none !important;
+  }
+
+  .detail-builder-mobile {
+    display: none !important;
+  }
+}
+
+/* ── My Queries Grid ──────────────────────────────────────────────── */
+.queries-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .queries-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+}
+
+/* ── Access Gate FAB ───────────────────────────────────────────────── */
+.access-fab {
+  position: fixed;
+  /* Sit just above the bottom nav on mobile */
+  bottom: calc(var(--bottom-nav-height, 68px) + 16px);
+  right: 16px;
+  z-index: 90;
+
+  /* Mobile: circle icon-only */
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+
+  color: #ffffff;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.access-fab:active {
+  transform: scale(0.93);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* Label hidden on mobile */
+.access-fab .fab-label {
+  display: none;
+}
+
+.access-fab--whatsapp { background: #25D366; }
+.access-fab--whatsapp:hover { background: #1ebe57; }
+
+.access-fab--terra { background: var(--color-terra); box-shadow: var(--shadow-cta); }
+.access-fab--terra:hover { background: var(--color-terra-hover); }
+
+@media (min-width: 768px) {
+  .access-fab {
+    /* Desktop: pill with text, bottom-right corner */
+    bottom: 32px;
+    right: 32px;
+    width: auto;
+    height: auto;
+    border-radius: var(--radius-pill);
+    padding: 14px 24px;
+    gap: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Show label text on desktop */
+  .access-fab .fab-label {
+    display: inline;
+  }
+}
