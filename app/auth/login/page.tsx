@@ -133,7 +133,7 @@ function LoginInner() {
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="you@example.com"
+                  placeholder="Enter your registered email"
                   style={{
                     flex: 1, padding: '12px 14px',
                     fontFamily: 'var(--font-ui)', fontSize: '0.9375rem',
@@ -160,7 +160,7 @@ function LoginInner() {
                   type={showPass ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                   style={{
                     flex: 1, padding: '12px 14px',
                     fontFamily: 'var(--font-ui)', fontSize: '0.9375rem',

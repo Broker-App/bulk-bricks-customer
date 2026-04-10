@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, UserPlus, AlertCircle, CheckCircle, Phone } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function RegisterPage() {
@@ -12,6 +12,7 @@ export default function RegisterPage() {
 
   const nameRef     = useRef<HTMLInputElement>(null);
   const emailRef    = useRef<HTMLInputElement>(null);
+  const phoneRef    = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmRef  = useRef<HTMLInputElement>(null);
 
@@ -27,11 +28,14 @@ export default function RegisterPage() {
 
     const fullName = nameRef.current!.value.trim();
     const email    = emailRef.current!.value.trim();
+    const phone    = phoneRef.current!.value.trim();
     const password = passwordRef.current!.value;
     const confirm  = confirmRef.current!.value;
 
     // Client-side validation
     if (!fullName) { setError('Please enter your full name.'); return; }
+    if (!phone) { setError('Please enter your mobile number.'); return; }
+    if (!/^[6-9]\d{9}$/.test(phone)) { setError('Please enter a valid 10-digit mobile number.'); return; }
     if (password.length < 6) { setError('Password must be at least 6 characters.'); return; }
     if (password !== confirm) { setError('Passwords do not match.'); return; }
 
@@ -43,6 +47,7 @@ export default function RegisterPage() {
       options: {
         data: {
           full_name: fullName,
+          phone: phone,
           role: 'customer',
         },
         // If email confirmation is enabled in Supabase, the callback route handles it.
@@ -170,7 +175,7 @@ export default function RegisterPage() {
                 type="text"
                 autoComplete="name"
                 required
-                placeholder="Sultan Khan"
+                placeholder="Enter your full name"
                 className="neuro-input"
                 style={{
                   width: '100%', padding: '12px 14px',
@@ -193,7 +198,7 @@ export default function RegisterPage() {
                 type="email"
                 autoComplete="email"
                 required
-                placeholder="you@example.com"
+                placeholder="Enter your email address"
                 className="neuro-input"
                 style={{
                   width: '100%', padding: '12px 14px',
@@ -202,6 +207,49 @@ export default function RegisterPage() {
                   background: 'none', border: 'none', outline: 'none', boxSizing: 'border-box',
                 }}
               />
+            </div>
+
+            {/* Mobile Number */}
+            <div>
+              <label htmlFor="reg-phone" style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600,
+                color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
+                Mobile Number <span style={{ color: 'var(--color-terra)', fontWeight: 700 }}>*</span>
+              </label>
+              <div className="neuro-input" style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{ 
+                  padding: '0 14px', 
+                  color: 'var(--color-text-muted)', 
+                  fontSize: '0.9375rem',
+                  borderRight: '1px solid var(--color-border-subtle)',
+                  paddingRight: '8px'
+                }}>
+                  +91
+                </span>
+                <input
+                  id="reg-phone"
+                  ref={phoneRef}
+                  type="tel"
+                  autoComplete="tel"
+                  required
+                  maxLength={10}
+                  placeholder="Enter 10-digit mobile number"
+                  className="neuro-input"
+                  style={{
+                    flex: 1, padding: '12px 14px',
+                    fontFamily: 'var(--font-ui)', fontSize: '0.9375rem',
+                    color: 'var(--color-text-primary)',
+                    background: 'none', border: 'none', outline: 'none',
+                  }}
+                />
+              </div>
+              <p style={{ 
+                fontSize: '0.75rem', 
+                color: 'var(--color-text-muted)', 
+                margin: '4px 0 0',
+                lineHeight: 1.4
+              }}>
+                10-digit mobile number starting with 6, 7, 8, or 9
+              </p>
             </div>
 
             {/* Password */}
@@ -218,7 +266,7 @@ export default function RegisterPage() {
                   autoComplete="new-password"
                   required
                   minLength={6}
-                  placeholder="Min. 6 characters"
+                  placeholder="Create a strong password"
                   style={{
                     flex: 1, padding: '12px 14px',
                     fontFamily: 'var(--font-ui)', fontSize: '0.9375rem',
@@ -248,7 +296,7 @@ export default function RegisterPage() {
                   type={showConfirm ? 'text' : 'password'}
                   autoComplete="new-password"
                   required
-                  placeholder="Re-enter password"
+                  placeholder="Confirm your password"
                   style={{
                     flex: 1, padding: '12px 14px',
                     fontFamily: 'var(--font-ui)', fontSize: '0.9375rem',
