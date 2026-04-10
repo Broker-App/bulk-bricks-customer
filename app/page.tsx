@@ -6,6 +6,7 @@ import { PropertyCarousel } from '@/components/property/PropertyCarousel';
 import { PropertyGrid } from '@/components/property/PropertyGrid';
 import { SearchBar } from '@/components/search/SearchBar';
 import { CategoryPills } from '@/components/search/CategoryPills';
+import { WhatsAppButton } from '@/components/home/WhatsAppButton';
 import type { Property } from '@/types';
 
 export const metadata = {
@@ -177,6 +178,9 @@ export default async function HomePage() {
         </div>
         <PropertyGrid properties={recent} />
       </section>
+
+      {/* ── WhatsApp Button ─────────────────────────────────────────────────── */}
+      <WhatsAppButton />
     </div>
   );
 }

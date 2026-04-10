@@ -807,6 +807,18 @@ body {
 .access-fab--terra { background: var(--color-terra); box-shadow: var(--shadow-cta); }
 .access-fab--terra:hover { background: var(--color-terra-hover); }
 
+/* Builder Profile Responsive Grid */
+.builder-info-grid {
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+/* Activity Stats Responsive Grid */
+.activity-stats-grid {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
 @media (min-width: 768px) {
   .access-fab {
     /* Desktop: pill with text, bottom-right corner */
@@ -823,5 +835,15 @@ body {
   /* Show label text on desktop */
   .access-fab .fab-label {
     display: inline;
+  }
+
+  .builder-info-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .activity-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
   }
 }
