@@ -163,11 +163,13 @@ export interface PropertyFilters {
   search?: string;
   category?: PropertyCategory;
   city?: string;
+  area?: string;           // location_area ilike search
   minPrice?: number;
   maxPrice?: number;
   isFeatured?: boolean;
   isGroupEnabled?: boolean;
   typeId?: string;
+  sortBy?: 'price_asc' | 'price_desc' | 'newest' | 'featured';
   page?: number;
   pageSize?: number;
 }

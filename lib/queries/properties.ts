@@ -1,9 +1,25 @@
 import { createClient } from '@/lib/supabase/server';
 import type { PropertyFilters } from '@/types';
 
+/** Distinct cities from active properties — used for dynamic city dropdown */
+export async function fetchDistinctCities(): Promise<string[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('properties')
+    .select('location_city')
+    .eq('status', 'active')
+    .is('deleted_at', null);
+  if (!data) return [];
+  return [...new Set(data.map((r) => r.location_city as string).filter(Boolean))].sort();
+}
+
 export async function fetchProperties(filters: PropertyFilters = {}) {
   const supabase = await createClient();
-  const { search = '', category, city, isFeatured, isGroupEnabled, page = 0, pageSize = 12 } = filters;
+  const {
+    search = '', category, city, area, isFeatured, isGroupEnabled,
+    minPrice, maxPrice, typeId, sortBy,
+    page = 0, pageSize = 12,
+  } = filters;
 
   let query = supabase
     .from('properties')
@@ -22,18 +38,22 @@ export async function fetchProperties(filters: PropertyFilters = {}) {
     .eq('status', 'active')
     .is('deleted_at', null);
 
-  if (search) {
-    query = query.or(
-      `title.ilike.%${search}%,location_city.ilike.%${search}%,location_area.ilike.%${search}%,category.ilike.%${search}%`
-    );
-  }
+  if (search)         query = query.or(
+    `title.ilike.%${search}%,location_city.ilike.%${search}%,location_area.ilike.%${search}%`
+  );
   if (category)         query = query.eq('category', category);
   if (city)             query = query.eq('location_city', city);
+  if (area)             query = query.ilike('location_area', `%${area}%`);
   if (isFeatured)       query = query.eq('is_featured', true);
   if (isGroupEnabled)   query = query.eq('is_group_enabled', true);
   if (filters.minPrice) query = query.gte('target_price', filters.minPrice);
   if (filters.maxPrice) query = query.lte('target_price', filters.maxPrice);
-  if (filters.typeId)   query = query.eq('property_type_id', filters.typeId);
+  if (typeId)           query = query.eq('property_type_id', typeId);
+
+  // Sorting
+  if (sortBy === 'price_asc')  return query.order('target_price', { ascending: true }).range(page * pageSize, (page + 1) * pageSize - 1);
+  if (sortBy === 'price_desc') return query.order('target_price', { ascending: false }).range(page * pageSize, (page + 1) * pageSize - 1);
+  if (sortBy === 'newest')     return query.order('created_at', { ascending: false }).range(page * pageSize, (page + 1) * pageSize - 1);
 
   return query
     .order('is_featured', { ascending: false })

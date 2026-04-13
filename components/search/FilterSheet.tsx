@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Star, Users } from 'lucide-react';
+import { Star, Users, MapPin, ArrowUpDown, Home, IndianRupee, X } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { createClient } from '@/lib/supabase/client';
@@ -13,135 +13,330 @@ interface FilterSheetProps {
   onClose: () => void;
 }
 
-const CITIES = ['Mumbai', 'Pune', 'Bengaluru', 'Hyderabad', 'Chennai', 'Delhi', 'Ahmedabad', 'Surat'];
+const labelStyle: React.CSSProperties = {
+  fontSize: '0.8125rem', fontWeight: 600,
+  color: 'var(--color-text-secondary)',
+  marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px',
+};
+const selectStyle: React.CSSProperties = {
+  width: '100%', padding: '11px 14px', borderRadius: 'var(--radius-md)',
+  border: '1px solid var(--color-border-default)',
+  background: 'var(--color-surface-3)',
+  color: 'var(--color-text-primary)',
+  fontFamily: 'var(--font-ui)', fontSize: '0.9rem', outline: 'none',
+  cursor: 'pointer',
+};
+const inputStyle: React.CSSProperties = {
+  ...selectStyle, cursor: 'text',
+};
+const toggleBtn = (active: boolean): React.CSSProperties => ({
+  display: 'inline-flex', alignItems: 'center', gap: '7px',
+  padding: '9px 16px', borderRadius: 'var(--radius-pill)',
+  border: `1.5px solid ${active ? 'var(--color-terra)' : 'var(--color-border-default)'}`,
+  background: active ? 'var(--color-terra-muted)' : 'transparent',
+  color: active ? 'var(--color-terra)' : 'var(--color-text-secondary)',
+  cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600,
+  transition: 'all 0.15s ease', flexShrink: 0,
+});
+
+const PRICE_PRESETS = [
+  { label: 'Under ₹50L',   min: '',          max: '5000000' },
+  { label: '₹50L – 1Cr',  min: '5000000',   max: '10000000' },
+  { label: '₹1Cr – 2Cr',  min: '10000000',  max: '20000000' },
+  { label: '₹2Cr – 5Cr',  min: '20000000',  max: '50000000' },
+  { label: 'Above ₹5Cr',  min: '50000000',  max: '' },
+];
 
 export function FilterSheet({ open, onClose }: FilterSheetProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // ── State ─────────────────────────────────────────────────────
   const [categories, setCategories] = useState<Category[]>([]);
+  const [cities,     setCities]     = useState<string[]>([]);
+  const [areas,      setAreas]      = useState<string[]>([]);
+  const [loadingAreas, setLoadingAreas] = useState(false);
+
   const [category,     setCategory]     = useState(searchParams.get('category') ?? '');
   const [typeId,       setTypeId]       = useState(searchParams.get('typeId') ?? '');
   const [city,         setCity]         = useState(searchParams.get('city') ?? '');
+  const [area,         setArea]         = useState(searchParams.get('area') ?? '');
   const [minPrice,     setMinPrice]     = useState(searchParams.get('minPrice') ?? '');
   const [maxPrice,     setMaxPrice]     = useState(searchParams.get('maxPrice') ?? '');
+  const [sortBy,       setSortBy]       = useState(searchParams.get('sortBy') ?? '');
   const [featured,     setFeatured]     = useState(searchParams.get('featured') === 'true');
   const [groupEnabled, setGroupEnabled] = useState(searchParams.get('group') === 'true');
 
-  // Fetch property types on open
+  // ── Fetch Categories & Cities on first open ───────────────────
   useEffect(() => {
-    if (!open || categories.length > 0) return;
-    createClient()
-      .from('categories')
-      .select('id, name, slug, parent_id')
-      .is('parent_id', null)
-      .order('name')
-      .then(({ data }) => setCategories((data ?? []) as Category[]));
-  }, [open, categories.length]);
+    if (!open) return;
+    const sb = createClient();
 
+    if (categories.length === 0) {
+      sb.from('categories')
+        .select('id, name, slug, parent_id')
+        .is('parent_id', null)
+        .order('name')
+        .then(({ data }) => setCategories((data ?? []) as Category[]));
+    }
+
+    if (cities.length === 0) {
+      sb.from('properties')
+        .select('location_city')
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .then(({ data }) => {
+          const unique = [...new Set((data ?? []).map(r => r.location_city as string).filter(Boolean))].sort();
+          setCities(unique);
+        });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // ── Fetch distinct areas when city changes ────────────────────
+  useEffect(() => {
+    setArea('');   // reset area when city changes
+    setAreas([]);
+    if (!city) return;
+    setLoadingAreas(true);
+    createClient()
+      .from('properties')
+      .select('location_area')
+      .eq('status', 'active')
+      .is('deleted_at', null)
+      .eq('location_city', city)
+      .then(({ data }) => {
+        const unique = [
+          ...new Set(
+            (data ?? [])
+              .map(r => r.location_area as string | null)
+              .filter((a): a is string => !!a && a.trim() !== '')
+          ),
+        ].sort();
+        setAreas(unique);
+        setLoadingAreas(false);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [city]);
+
+  // ── Active filter count ───────────────────────────────────────
+  const activeCount = [category, typeId, city, area, minPrice, maxPrice, sortBy, featured, groupEnabled]
+    .filter(v => !!v && v !== false).length;
+
+  // ── Preset price helper ───────────────────────────────────────
+  const applyPreset = (preset: typeof PRICE_PRESETS[number]) => {
+    setMinPrice(preset.min);
+    setMaxPrice(preset.max);
+  };
+
+  const currentPreset = PRICE_PRESETS.find(p => p.min === minPrice && p.max === maxPrice);
+
+  // ── Apply & Reset ─────────────────────────────────────────────
   const apply = () => {
     const params = new URLSearchParams();
-    if (category)     params.set('category', category);
-    if (typeId)       params.set('typeId', typeId);
-    if (city)         params.set('city', city);
-    if (minPrice)     params.set('minPrice', minPrice);
-    if (maxPrice)     params.set('maxPrice', maxPrice);
-    if (featured)     params.set('featured', 'true');
-    if (groupEnabled) params.set('group', 'true');
     const q = searchParams.get('search');
-    if (q) params.set('search', q);
+    if (q)           params.set('search', q);
+    if (category)    params.set('category', category);
+    if (typeId)      params.set('typeId', typeId);
+    if (city)        params.set('city', city);
+    if (area.trim()) params.set('area', area.trim());
+    if (minPrice)    params.set('minPrice', minPrice);
+    if (maxPrice)    params.set('maxPrice', maxPrice);
+    if (sortBy)      params.set('sortBy', sortBy);
+    if (featured)    params.set('featured', 'true');
+    if (groupEnabled) params.set('group', 'true');
     router.push(`/properties?${params.toString()}`);
     onClose();
   };
 
   const reset = () => {
-    setCategory(''); setTypeId(''); setCity('');
-    setMinPrice(''); setMaxPrice('');
+    setCategory(''); setTypeId(''); setCity(''); setArea('');
+    setMinPrice(''); setMaxPrice(''); setSortBy('');
     setFeatured(false); setGroupEnabled(false);
     router.push('/properties');
     onClose();
   };
 
-  const labelStyle: React.CSSProperties = {
-    fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '8px', display: 'block',
-  };
-  const selectStyle: React.CSSProperties = {
-    width: '100%', padding: '11px 14px', borderRadius: 'var(--radius-md)',
-    border: '1px solid var(--color-border-default)', background: 'var(--color-surface-3)',
-    color: 'var(--color-text-primary)', fontFamily: 'var(--font-ui)', fontSize: '0.9rem', outline: 'none',
-  };
-  const inputStyle: React.CSSProperties = { ...selectStyle };
-  const toggleStyle = (active: boolean): React.CSSProperties => ({
-    display: 'inline-flex', alignItems: 'center', gap: '8px',
-    padding: '10px 16px', borderRadius: 'var(--radius-pill)',
-    border: `1.5px solid ${active ? 'var(--color-terra)' : 'var(--color-border-default)'}`,
-    background: active ? 'var(--color-terra-muted)' : 'transparent',
-    color: active ? 'var(--color-terra)' : 'var(--color-text-secondary)',
-    cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600,
-    transition: 'all 0.15s ease',
-  });
+  // ── Clear single field helper ─────────────────────────────────
+  const ClearBtn = ({ onClick }: { onClick: () => void }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        marginLeft: 'auto', background: 'none', border: 'none',
+        cursor: 'pointer', color: 'var(--color-text-muted)',
+        display: 'flex', alignItems: 'center', padding: 0, fontSize: '0.75rem', gap: '2px',
+      }}
+    >
+      <X size={12} /> Clear
+    </button>
+  );
 
   return (
-    <Modal open={open} onClose={onClose} title="Filter Properties">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {/* Property Type (from categories table) */}
-        <div>
-          <label style={labelStyle}>Property Type</label>
-          <select id="filter-type" value={typeId} onChange={e => setTypeId(e.target.value)} style={selectStyle}>
-            <option value="">All Types</option>
-            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-        </div>
+    <Modal open={open} onClose={onClose} title={`Filter Properties${activeCount > 0 ? ` (${activeCount})` : ''}`}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
 
-        {/* Category (Residential / Commercial) */}
+        {/* ── Category: Residential / Commercial ── */}
         <div>
-          <label style={labelStyle}>Category</label>
-          <select id="filter-category" value={category} onChange={e => setCategory(e.target.value)} style={selectStyle}>
-            <option value="">All Categories</option>
-            <option value="residential">Residential</option>
-            <option value="commercial">Commercial</option>
-          </select>
-        </div>
-
-        {/* City */}
-        <div>
-          <label style={labelStyle}>City</label>
-          <select id="filter-city" value={city} onChange={e => setCity(e.target.value)} style={selectStyle}>
-            <option value="">All Cities</option>
-            {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-
-        {/* Price range */}
-        <div>
-          <label style={labelStyle}>Budget Range (₹)</label>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <input id="filter-min-price" type="number" placeholder="Min" value={minPrice}
-              onChange={e => setMinPrice(e.target.value)} style={inputStyle} />
-            <input id="filter-max-price" type="number" placeholder="Max" value={maxPrice}
-              onChange={e => setMaxPrice(e.target.value)} style={inputStyle} />
+          <label style={labelStyle}>
+            <Home size={13} /> Category
+            {category && <ClearBtn onClick={() => setCategory('')} />}
+          </label>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            {[
+              { v: '',            label: 'All' },
+              { v: 'residential', label: 'Residential' },
+              { v: 'commercial',  label: 'Commercial' },
+            ].map(opt => (
+              <button key={opt.v} style={toggleBtn(category === opt.v)} onClick={() => setCategory(opt.v)}>
+                {opt.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Toggles */}
+        {/* ── Property Type (categories table) ── */}
+        {categories.length > 0 && (
+          <div>
+            <label style={labelStyle}>
+              Property Type
+              {typeId && <ClearBtn onClick={() => setTypeId('')} />}
+            </label>
+            <select id="filter-type" value={typeId} onChange={e => setTypeId(e.target.value)} style={selectStyle}>
+              <option value="">All Types</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </div>
+        )}
+
+        {/* ── City ── */}
+        <div>
+          <label style={labelStyle}>
+            <MapPin size={13} /> City
+            {city && <ClearBtn onClick={() => { setCity(''); setArea(''); setAreas([]); }} />}
+          </label>
+          <select id="filter-city" value={city} onChange={e => setCity(e.target.value)} style={selectStyle}>
+            <option value="">All Cities</option>
+            {cities.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+
+        {/* ── Area — shown only when a city is selected ── */}
+        {city && (
+          <div>
+            <label style={labelStyle}>
+              <MapPin size={13} /> Area / Neighbourhood
+              {area && <ClearBtn onClick={() => setArea('')} />}
+            </label>
+            <select
+              id="filter-area"
+              value={area}
+              onChange={e => setArea(e.target.value)}
+              style={{
+                ...selectStyle,
+                opacity: loadingAreas ? 0.6 : 1,
+              }}
+              disabled={loadingAreas || areas.length === 0}
+            >
+              {loadingAreas ? (
+                <option value="">Loading areas…</option>
+              ) : areas.length === 0 ? (
+                <option value="">No specific areas found</option>
+              ) : (
+                <>
+                  <option value="">All areas in {city}</option>
+                  {areas.map(a => <option key={a} value={a}>{a}</option>)}
+                </>
+              )}
+            </select>
+          </div>
+        )}
+
+        {/* ── Budget ── */}
+        <div>
+          <label style={labelStyle}>
+            <IndianRupee size={13} /> Budget Range
+            {(minPrice || maxPrice) && <ClearBtn onClick={() => { setMinPrice(''); setMaxPrice(''); }} />}
+          </label>
+          {/* Preset chips */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+            {PRICE_PRESETS.map(preset => (
+              <button
+                key={preset.label}
+                style={{
+                  padding: '6px 12px', borderRadius: 'var(--radius-pill)',
+                  border: `1.5px solid ${currentPreset?.label === preset.label ? 'var(--color-terra)' : 'var(--color-border-default)'}`,
+                  background: currentPreset?.label === preset.label ? 'var(--color-terra-muted)' : 'transparent',
+                  color: currentPreset?.label === preset.label ? 'var(--color-terra)' : 'var(--color-text-secondary)',
+                  fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s ease',
+                }}
+                onClick={() => applyPreset(preset)}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+          {/* Custom range */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <input
+              id="filter-min-price"
+              type="number"
+              placeholder="Min (₹)"
+              value={minPrice}
+              onChange={e => setMinPrice(e.target.value)}
+              style={inputStyle}
+            />
+            <input
+              id="filter-max-price"
+              type="number"
+              placeholder="Max (₹)"
+              value={maxPrice}
+              onChange={e => setMaxPrice(e.target.value)}
+              style={inputStyle}
+            />
+          </div>
+        </div>
+
+        {/* ── Sort By ── */}
+        <div>
+          <label style={labelStyle}>
+            <ArrowUpDown size={13} /> Sort By
+            {sortBy && <ClearBtn onClick={() => setSortBy('')} />}
+          </label>
+          <select
+            id="filter-sort"
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+            style={selectStyle}
+          >
+            <option value="">Default (Featured first)</option>
+            <option value="newest">Newest first</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+          </select>
+        </div>
+
+        {/* ── Special Filters ── */}
         <div>
           <label style={labelStyle}>Special Filters</label>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button style={toggleStyle(featured)} onClick={() => setFeatured(!featured)}>
-              <Star size={14} strokeWidth={2} />
+            <button style={toggleBtn(featured)} onClick={() => setFeatured(!featured)}>
+              <Star size={13} strokeWidth={2.5} />
               Featured Only
             </button>
-            <button style={toggleStyle(groupEnabled)} onClick={() => setGroupEnabled(!groupEnabled)}>
-              <Users size={14} strokeWidth={2} />
+            <button style={toggleBtn(groupEnabled)} onClick={() => setGroupEnabled(!groupEnabled)}>
+              <Users size={13} strokeWidth={2.5} />
               Group Buy
             </button>
           </div>
         </div>
 
-        {/* Actions */}
-        <div style={{ display: 'flex', gap: '12px', paddingTop: '8px' }}>
-          <Button variant="ghost" style={{ flex: 1 }} onClick={reset}>Reset</Button>
-          <Button variant="terra" style={{ flex: 1 }} onClick={apply}>Apply Filters</Button>
+        {/* ── Actions ── */}
+        <div style={{ display: 'flex', gap: '12px', paddingTop: '4px' }}>
+          <Button variant="ghost" style={{ flex: 1 }} onClick={reset}>Reset All</Button>
+          <Button variant="terra" style={{ flex: 1 }} onClick={apply}>
+            Show Results
+          </Button>
         </div>
       </div>
     </Modal>

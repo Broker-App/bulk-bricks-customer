@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { fetchProperties } from '@/lib/queries/properties';
 import { PropertyGrid } from '@/components/property/PropertyGrid';
 import FilterBar from './FilterBar';
-import type { Property, PropertyCategory } from '@/types';
+import type { Property, PropertyCategory, PropertyFilters } from '@/types';
 
 export const metadata = {
   title: 'Properties — Bulk Bricks',
@@ -14,10 +14,13 @@ interface PageProps {
     search?: string;
     category?: string;
     city?: string;
+    area?: string;
+    typeId?: string;
     minPrice?: string;
     maxPrice?: string;
     featured?: string;
     group?: string;
+    sortBy?: string;
     page?: string;
   }>;
 }
@@ -30,10 +33,13 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     search:         sp.search,
     category:       sp.category as PropertyCategory | undefined,
     city:           sp.city,
+    area:           sp.area,
+    typeId:         sp.typeId,
     minPrice:       sp.minPrice ? Number(sp.minPrice) : undefined,
     maxPrice:       sp.maxPrice ? Number(sp.maxPrice) : undefined,
     isFeatured:     sp.featured === 'true',
     isGroupEnabled: sp.group === 'true',
+    sortBy:         sp.sortBy as PropertyFilters['sortBy'],
     page,
     pageSize:       12,
   });
