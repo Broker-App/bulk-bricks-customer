@@ -4,9 +4,9 @@ import { Search, Unlock, MessageCircle, Users } from 'lucide-react';
 import { fetchProperties } from '@/lib/queries/properties';
 import { PropertyCarousel } from '@/components/property/PropertyCarousel';
 import { PropertyGrid } from '@/components/property/PropertyGrid';
-import { SearchBar } from '@/components/search/SearchBar';
 import { CategoryPills } from '@/components/search/CategoryPills';
 import { WhatsAppButton } from '@/components/home/WhatsAppButton';
+import { HeroSection } from '@/components/home/HeroSection';
 import { ConversationalSearch } from '@/components/search/ConversationalSearch';
 import type { Property } from '@/types';
 
@@ -29,64 +29,14 @@ export default async function HomePage() {
   return (
     <div style={{ background: 'var(--color-canvas)', minHeight: '100dvh' }}>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section
-        style={{
-          background: 'linear-gradient(160deg, var(--color-surface) 0%, var(--color-canvas) 100%)',
-          padding: '40px 20px 28px',
-        }}
-      >
-        <p className="section-label" style={{ marginBottom: '8px' }}>Bulk Bricks</p>
-        <h1
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(1.75rem, 5vw, 2.75rem)',
-            fontWeight: 700,
-            color: 'var(--color-text-primary)',
-            lineHeight: 1.15,
-            margin: '0 0 8px',
-            letterSpacing: '-0.02em',
-          }}
-        >
-          Find Your<br />
-          <span style={{ color: 'var(--color-terra)' }}>Perfect Property</span>
-        </h1>
-        <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 24px', fontSize: '0.9375rem' }}>
-          Verified listings from trusted builders
-        </p>
-        <Suspense fallback={null}>
-          <SearchBar />
-        </Suspense>
-      </section>
+      <HeroSection />
 
       {/* ── Category Pills ─────────────────────────────────────────────── */}
       <Suspense fallback={null}>
         <CategoryPills />
       </Suspense>
 
-      {/* ── Stats strip ───────────────────────────────────────────── */}
-      <div style={{
-        background: 'var(--color-terra)', padding: '16px 20px',
-        display: 'flex', justifyContent: 'center', gap: '32px', flexWrap: 'wrap'
-      }}>
-        {[
-          { value: '500+', label: 'Properties' },
-          { value: '100+', label: 'Builders' },
-          { value: '₹0', label: 'Brokerage' },
-        ].map(({ value, label }) => (
-          <div key={label} style={{ textAlign: 'center' }}>
-            <p style={{
-              fontFamily: 'var(--font-display)', fontSize: '1.375rem', fontWeight: 800,
-              color: '#FFFFFF', margin: '0 0 2px', letterSpacing: '-0.02em'
-            }}>{value}</p>
-            <p style={{
-              fontSize: '0.6875rem', color: 'rgba(255,255,255,0.75)',
-              fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase'
-            }}>{label}</p>
-          </div>
-        ))}
-      </div>
       <div>
-
         <Suspense fallback={null}>
           <ConversationalSearch />
         </Suspense>
