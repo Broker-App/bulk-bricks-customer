@@ -17,14 +17,14 @@ export const metadata = {
 
 export default async function HomePage() {
   const [featuredRes, groupRes, recentRes] = await Promise.all([
-    fetchProperties({ isFeatured: true, pageSize: 8 }),
-    fetchProperties({ isGroupEnabled: true, pageSize: 8 }),
-    fetchProperties({ pageSize: 8 }),
+    fetchProperties({ isFeatured: true, pageSize: 5 }),
+    fetchProperties({ isGroupEnabled: true, pageSize: 5 }),
+    fetchProperties({ pageSize: 5 }),
   ]);
 
-  const featured = (featuredRes.data ?? []) as unknown as Property[];
-  const groupBuy = ((groupRes.data ?? []) as unknown as Property[]).filter(p => !p.is_featured);
-  const recent = (recentRes.data ?? []) as unknown as Property[];
+  const featured = ((featuredRes.data ?? []) as unknown as Property[]).slice(0, 5);
+  const groupBuy = (((groupRes.data ?? []) as unknown as Property[]).filter(p => !p.is_featured)).slice(0, 5);
+  const recent = ((recentRes.data ?? []) as unknown as Property[]).slice(0, 5);
 
   return (
     <div style={{ background: 'var(--color-canvas)', minHeight: '100dvh' }}>

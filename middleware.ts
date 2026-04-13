@@ -4,6 +4,9 @@ import type { NextRequest } from 'next/server';
 
 const PROTECTED_ROUTES = ['/my-properties', '/my-queries', '/profile'];
 
+// Auth-only routes — signed-in users should be bounced out
+const GUEST_ONLY_ROUTES = ['/auth/login', '/auth/register'];
+
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
@@ -29,17 +32,25 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
 
-  // Redirect unauthenticated users away from protected routes
+  // ── Guest-only guard ──────────────────────────────────────────
+  // Signed-in users must not access login / register screens.
+  if (user && GUEST_ONLY_ROUTES.some((r) => pathname.startsWith(r))) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // ── Protected-route guard ─────────────────────────────────────
+  // Unauthenticated users cannot access personal pages.
+  const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
   if (isProtected && !user) {
     const loginUrl = new URL('/auth/login', request.url);
     loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Role guard — only customers allowed in this app
-  if (user) {
+  // ── Role guard ────────────────────────────────────────────────
+  // Only customers are allowed in this app.
+  if (user && isProtected) {
     const { data: profile } = await supabase
       .from('users')
       .select('role')
@@ -56,8 +67,12 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // Protected routes (auth required)
     '/my-properties/:path*',
     '/my-queries/:path*',
     '/profile/:path*',
+    // Guest-only routes (no auth allowed)
+    '/auth/login',
+    '/auth/register',
   ],
 };

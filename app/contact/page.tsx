@@ -48,7 +48,9 @@ export default function ContactPage() {
         {mode === 'success' ? (
           <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--color-surface)',
             borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-border-subtle)' }}>
-            <CheckCircle size={56} color="var(--color-success)" style={{ marginBottom: '16px' }} />
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+              <CheckCircle size={56} color="var(--color-success)" />
+            </div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700,
               color: 'var(--color-text-primary)', marginBottom: '10px' }}>
               Message Received!
@@ -61,12 +63,12 @@ export default function ContactPage() {
           <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)',
             border: '1px solid var(--color-border-subtle)', padding: '32px',
             boxShadow: 'var(--shadow-card)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <Input id="contact-page-name" label="Your Name *" placeholder="e.g. Rahul Sharma"
+            <Input id="contact-page-name" label="Your Name *" placeholder="Enter your name"
               value={name} onChange={e => setName(e.target.value)} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <Input id="contact-page-email" label="Email" type="email" placeholder="you@email.com"
+              <Input id="contact-page-email" label="Email" type="email" placeholder="Enter your email"
                 value={email} onChange={e => setEmail(e.target.value)} />
-              <Input id="contact-page-phone" label="Phone" type="tel" placeholder="+91 98765..."
+              <Input id="contact-page-phone" label="Phone" type="tel" placeholder="Enter your phone number"
                 value={phone} onChange={e => setPhone(e.target.value)} />
             </div>
             <div>
@@ -77,7 +79,7 @@ export default function ContactPage() {
               <div className="neuro-input" style={{ padding: 0 }}>
                 <textarea id="contact-page-message" rows={5} value={message}
                   onChange={e => setMessage(e.target.value)}
-                  placeholder="How can we help you?"
+                  placeholder="Enter your message"
                   style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none',
                     padding: '12px 14px', color: 'var(--color-text-primary)',
                     fontFamily: 'var(--font-ui)', fontSize: '0.9375rem', resize: 'none', lineHeight: 1.6 }}
