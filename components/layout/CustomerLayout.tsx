@@ -2,6 +2,7 @@ import { BottomNav } from './BottomNav';
 import { TopNav } from './TopNav';
 import { Footer } from './Footer';
 import { MobileTopBar } from './MobileTopBar';
+import { LoginNagModal } from '../auth/LoginNagModal';
 
 export function CustomerLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +18,9 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
       </main>
       {/* Mobile-only bottom nav */}
       <BottomNav />
+      
+      {/* Global Auth Nag Modal for Guests */}
+      <LoginNagModal />
     </div>
   );
 }

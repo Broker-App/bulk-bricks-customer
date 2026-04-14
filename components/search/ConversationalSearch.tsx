@@ -33,6 +33,38 @@ const POPULAR: { label: string; state: Partial<SearchState> }[] = [
     label: 'Budget Under ₹50L',
     state: { category: '', typeId: '', city: '', area: '', budgetIndex: 1, groupBuy: 'no' },
   },
+  {
+    label: 'Luxury Homes ₹2Cr+',
+    state: { category: 'residential', typeId: '', city: '', area: '', budgetIndex: 3, groupBuy: 'no' },
+  },
+  {
+    label: 'Bangalore Apartments',
+    state: { category: 'residential', typeId: 'Apartment', city: 'Bangalore', area: '', budgetIndex: 0, groupBuy: 'no' },
+  },
+  {
+    label: 'Delhi Commercial',
+    state: { category: 'commercial', typeId: '', city: 'Delhi', area: '', budgetIndex: 0, groupBuy: 'no' },
+  },
+  {
+    label: 'Pune Villas',
+    state: { category: 'residential', typeId: 'Villa', city: 'Pune', area: '', budgetIndex: 2, groupBuy: 'no' },
+  },
+  {
+    label: 'With Parking',
+    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 0, amenityId: '1', groupBuy: 'no' },
+  },
+  {
+    label: 'Gym & Pool',
+    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 0, amenityId: '2', groupBuy: 'no' },
+  },
+  {
+    label: 'Hyderabad Group Buy',
+    state: { category: 'residential', typeId: '', city: 'Hyderabad', area: '', budgetIndex: 1, groupBuy: 'yes' },
+  },
+  {
+    label: 'Chennai Under ₹1Cr',
+    state: { category: '', typeId: '', city: 'Chennai', area: '', budgetIndex: 2, groupBuy: 'no' },
+  },
 ];
 
 interface SearchState {
