@@ -27,7 +27,7 @@ export async function fetchProperties(filters: PropertyFilters = {}) {
   const {
     search = '', category, city, area, isFeatured, isGroupEnabled,
     minPrice, maxPrice, typeId, sortBy, amenityIds,
-    page = 0, pageSize = 12,
+    page = 0, pageSize = 10,
   } = filters;
 
   let query = supabase

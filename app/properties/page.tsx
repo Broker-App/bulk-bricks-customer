@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { fetchProperties } from '@/lib/queries/properties';
-import { PropertyGrid } from '@/components/property/PropertyGrid';
 import FilterBar from './FilterBar';
+import { PropertiesInfiniteScrollClient } from './PropertiesInfiniteScrollClient';
 import type { Property, PropertyCategory, PropertyFilters } from '@/types';
 
 export const metadata = {
@@ -28,9 +28,9 @@ interface PageProps {
 
 export default async function PropertiesPage({ searchParams }: PageProps) {
   const sp = await searchParams;
-  const page = Math.max(0, parseInt(sp.page ?? '0', 10));
 
-  const { data, count } = await fetchProperties({
+  // Build filters object from search params
+  const filters: PropertyFilters = {
     search:         sp.search,
     category:       sp.category as PropertyCategory | undefined,
     city:           sp.city,
@@ -42,12 +42,12 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     isGroupEnabled: sp.group === 'true',
     sortBy:         sp.sortBy as PropertyFilters['sortBy'],
     amenityIds:     sp.amenities ? sp.amenities.split(',').filter(Boolean) : undefined,
-    page,
-    pageSize:       12,
-  });
+    page:           0, // Always page 0 for SSR
+    pageSize:       10,
+  };
 
-  const properties = (data ?? []) as unknown as Property[];
-  const totalPages = Math.ceil((count ?? 0) / 12);
+  const { data, count } = await fetchProperties(filters);
+  const initialProperties = (data ?? []) as unknown as Property[];
 
   return (
     <div style={{ background: 'var(--color-canvas)', minHeight: '100dvh' }}>
@@ -67,32 +67,17 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 
       {/* Results */}
       <div style={{ padding: '16px 16px 40px' }}>
-        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginBottom: '16px' }}>
-          {count ?? 0} {count === 1 ? 'property' : 'properties'} found
-        </p>
-        <PropertyGrid properties={properties} />
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '32px' }}>
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <a
-                key={i}
-                href={`/properties?${new URLSearchParams({ ...sp, page: String(i) }).toString()}`}
-                style={{
-                  width: '36px', height: '36px', borderRadius: '50%', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', textDecoration: 'none',
-                  fontWeight: 600, fontSize: '0.875rem',
-                  background: i === page ? 'var(--color-terra)' : 'var(--color-surface)',
-                  color: i === page ? '#fff' : 'var(--color-text-secondary)',
-                  border: '1.5px solid var(--color-border-default)',
-                }}
-              >
-                {i + 1}
-              </a>
-            ))}
+        <Suspense fallback={
+          <div style={{ textAlign: 'center', padding: '32px' }}>
+            Loading properties...
           </div>
-        )}
+        }>
+          <PropertiesInfiniteScrollClient 
+            initialProperties={initialProperties} 
+            totalCount={count ?? 0} 
+            filters={filters} 
+          />
+        </Suspense>
       </div>
     </div>
   );
