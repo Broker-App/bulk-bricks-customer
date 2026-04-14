@@ -1,12 +1,92 @@
 import { createClient } from '@/lib/supabase/server';
 
-export async function fetchBuilders() {
+export interface BuilderStat {
+  total: number;
+  active: number;
+  sold: number;
+  customers: number;
+}
+
+export interface BuilderWithStats {
+  id: string;
+  company_name: string;
+  logo_url: string | null;
+  status: string;
+  website_url: string | null;
+  business_address: string | null;
+  verified_at: string | null;
+  created_at: string;
+  stats: BuilderStat;
+}
+
+export interface FetchBuildersOptions {
+  page: number;
+  pageSize: number;
+  query?: string;
+}
+
+export async function fetchBuildersPaginated(options: FetchBuildersOptions): Promise<{ data: BuilderWithStats[]; totalCount: number; error: unknown }> {
+  const { page, pageSize, query } = options;
   const supabase = await createClient();
-  return supabase
+  const from = page * pageSize;
+  const to = from + pageSize - 1;
+
+  // 1. Fetch paginated builders with search and count
+  let buildersQuery = supabase
     .from('builders')
-    .select('id, company_name, logo_url, status, website_url, verified_at, created_at')
+    .select('id, company_name, logo_url, status, website_url, business_address, verified_at, created_at', { count: 'exact' })
     .eq('status', 'verified')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (query && query.trim()) {
+    buildersQuery = buildersQuery.ilike('company_name', `%${query.trim()}%`);
+  }
+
+  const buildersRes = await buildersQuery;
+  const builders = buildersRes.data ?? [];
+  const totalCount = buildersRes.count ?? 0;
+
+  // 2. Extract builder IDs from this page
+  const builderIds = builders.map(b => b.id);
+
+  // 3. Fetch stats data only for these builders
+  const [propertiesRes, accessRes] = await Promise.all([
+    supabase
+      .from('properties')
+      .select('builder_id, status')
+      .is('deleted_at', null)
+      .in('builder_id', builderIds),
+    supabase
+      .from('customer_access')
+      .select('builder_id')
+      .in('builder_id', builderIds),
+  ]);
+
+  const properties = propertiesRes.data ?? [];
+  const accesses = accessRes.data ?? [];
+
+  // 4. Merge stats into each builder
+  const data: BuilderWithStats[] = builders.map(builder => {
+    const builderProps = properties.filter(p => p.builder_id === builder.id);
+    return {
+      ...builder,
+      stats: {
+        total: builderProps.length,
+        active: builderProps.filter(p => p.status === 'active').length,
+        sold: builderProps.filter(p => p.status === 'sold').length,
+        customers: accesses.filter(a => a.builder_id === builder.id).length,
+      },
+    };
+  });
+
+  return { data, totalCount, error: buildersRes.error };
+}
+
+// Legacy function for backward compatibility
+export async function fetchBuilders(): Promise<{ data: BuilderWithStats[]; error: unknown }> {
+  const result = await fetchBuildersPaginated({ page: 0, pageSize: 1000 });
+  return { data: result.data, error: result.error };
 }
 
 export async function fetchBuilderDetail(id: string) {
