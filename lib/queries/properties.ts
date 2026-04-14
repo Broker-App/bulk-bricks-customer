@@ -116,21 +116,67 @@ export async function checkAccess(customerId: string, propertyId: string) {
 
 export async function fetchMyProperties(customerId: string) {
   const supabase = await createClient();
-  return supabase
+  const { data } = await supabase
     .from('customer_access')
     .select(
       `
       id, granted_at,
-      property:properties(
-        id, title, target_price, dev_price, location_city, location_area,
-        whatsapp_group_link, status,
-        builder:builders(company_name, logo_url, status),
-        images:property_images(url, is_cover)
-      )
+       property:properties(
+         id, title, target_price, dev_price, location_city, location_area,
+         whatsapp_group_link, status, is_featured, is_group_enabled,
+         group_size, slots_filled, created_at,
+         builder:builders(id, company_name, logo_url, status),
+         images:property_images(url, alt_text, is_cover, sort_order)
+       )
     `
     )
     .eq('customer_id', customerId)
     .order('granted_at', { ascending: false });
+
+  return { data: data ?? [] };
+}
+
+export async function fetchMyPropertiesPaginated(
+  customerId: string,
+  page: number,
+  search = '',
+  pageSize = 10
+) {
+  const supabase = await createClient();
+  const from = page * pageSize;
+  const to   = from + pageSize - 1;
+
+  let query = supabase
+    .from('customer_access')
+    .select(
+      `id, granted_at,
+       property:properties(
+         id, title, category, target_price, dev_price, location_city, location_area,
+         whatsapp_group_link, status, is_featured, is_group_enabled,
+         group_size, slots_filled, created_at,
+         builder:builders(id, company_name, logo_url, status),
+         images:property_images(url, alt_text, is_cover, sort_order)
+       )`,
+      { count: 'exact' }
+    )
+    .eq('customer_id', customerId)
+    .order('granted_at', { ascending: false });
+
+  // Simple search — filter joined property title or city
+  // Supabase doesn't support ilike on joined columns directly,
+  // so we do a two-step: fetch matching property IDs first
+  if (search.trim()) {
+    const { data: matched } = await supabase
+      .from('properties')
+      .select('id')
+      .or(`title.ilike.%${search}%,location_city.ilike.%${search}%`);
+    const ids = (matched ?? []).map(p => p.id);
+    if (ids.length === 0) return { data: [], count: 0 };
+    query = query.in('property_id', ids);
+  }
+
+  const { data, count } = await query.range(from, to);
+  return { data: data ?? [], count: count ?? 0 };
 }
 
 export async function fetchMyQueries(customerId: string) {

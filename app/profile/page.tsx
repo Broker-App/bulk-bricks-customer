@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {
   Sun, Moon, ChevronRight, Heart, MessageSquare, HelpCircle,
-  Info, LogOut, User, Calendar, Mail, Pencil
+  Info, LogOut, User, Calendar, Mail, Pencil, Building2
 } from 'lucide-react';
 import { useThemeContext } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,6 +18,7 @@ export default function ProfilePage() {
 
   const menuItems = [
     { icon: Heart, label: 'Saved Properties', desc: 'Properties you\'ve liked', href: '/saved' },
+    { icon: Building2, label: 'My Properties', desc: 'Properties you\'ve unlocked', href: '/my-properties' },
     { icon: MessageSquare, label: 'My Queries', desc: 'Track your enquiries', href: '/my-queries' },
     { icon: HelpCircle, label: 'Help & Support', desc: 'Get answers to your questions', href: '/faq' },
     { icon: Info, label: 'About Bulk Bricks', desc: 'Learn about our mission', href: '/about' },
