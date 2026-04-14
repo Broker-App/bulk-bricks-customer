@@ -1,536 +1,373 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, MapPin, Home, DollarSign, Bed, Bath, Square, ChevronDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import type { Amenity } from '@/types';
 
-interface SearchFilters {
-  location?: string;
-  propertyType?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  minBedrooms?: number;
-  minBathrooms?: number;
-  minArea?: number;
-  maxArea?: number;
-  furnishing?: string;
-  age?: string;
-  parking?: string;
-  facing?: string;
-  amenities?: string[];
+/* ─── Budget options (full rupees) ──────────────────────────────── */
+const BUDGET_OPTIONS = [
+  { label: 'any budget',    min: '',         max: ''         },
+  { label: 'under ₹50L',   min: '',         max: '5000000'  },
+  { label: '₹50L – 1Cr',  min: '5000000',  max: '10000000' },
+  { label: '₹1Cr – 2Cr',  min: '10000000', max: '20000000' },
+  { label: '₹2Cr+',       min: '20000000', max: ''         },
+];
+
+/* ─── Popular searches — fill state rather than navigate ─────────── */
+const POPULAR: { label: string; state: Partial<SearchState> }[] = [
+  {
+    label: 'Residential in Mumbai',
+    state: { category: 'residential', typeId: '', city: 'Mumbai', area: '', budgetIndex: 0, groupBuy: 'no' },
+  },
+  {
+    label: 'Commercial Properties',
+    state: { category: 'commercial', typeId: '', city: '', area: '', budgetIndex: 0, groupBuy: 'no' },
+  },
+  {
+    label: 'Group Buy Deals',
+    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 0, groupBuy: 'yes' },
+  },
+  {
+    label: 'Budget Under ₹50L',
+    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 1, groupBuy: 'no' },
+  },
+];
+
+interface SearchState {
+  category: string;
+  typeId: string;
+  city: string;
+  area: string;
+  budgetIndex: number;
+  amenityId: string;
+  groupBuy: string;
 }
 
+/* ─── Styled inline select ───────────────────────────────────────── */
+function Word({ children }: { children: React.ReactNode }) {
+  return (
+    <span style={{
+      fontSize: 'clamp(1rem, 2.5vw, 1.15rem)',
+      color: 'var(--color-text-secondary)',
+      fontFamily: 'var(--font-ui)',
+      fontWeight: 400,
+      alignSelf: 'center',
+      flexShrink: 0,
+      lineHeight: 1,
+    }}>
+      {children}
+    </span>
+  );
+}
+
+function InlineDrop({
+  id,
+  value,
+  onChange,
+  children,
+}: {
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  children: React.ReactNode;
+}) {
+  const hasValue = !!value;
+  return (
+    <select
+      id={id}
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      style={{
+        padding: '7px 10px',
+        fontSize: 'clamp(0.9375rem, 2.2vw, 1.05rem)',
+        fontFamily: 'var(--font-ui)',
+        fontWeight: 700,
+        color: hasValue ? 'var(--color-terra)' : 'var(--color-text-muted)',
+        background: hasValue ? 'var(--color-terra-muted)' : 'var(--color-canvas)',
+        border: `1.5px solid ${hasValue ? 'var(--color-terra-border)' : 'var(--color-border-default)'}`,
+        borderRadius: 'var(--radius-md)',
+        cursor: 'pointer',
+        outline: 'none',
+        maxWidth: '100%',
+        appearance: 'auto',
+        transition: 'all 0.15s ease',
+        flexShrink: 0,
+      }}
+    >
+      {children}
+    </select>
+  );
+}
+
+/* ─── Main Component ─────────────────────────────────────────────── */
 export function ConversationalSearch() {
-  const [filters, setFilters] = useState<SearchFilters>({});
+  const router = useRouter();
 
-  const locations = [
-    { value: '', label: 'Select location' },
-    { value: 'mumbai', label: 'Mumbai' },
-    { value: 'delhi', label: 'Delhi' },
-    { value: 'bangalore', label: 'Bangalore' },
-    { value: 'pune', label: 'Pune' },
-    { value: 'hyderabad', label: 'Hyderabad' },
-    { value: 'chennai', label: 'Chennai' },
-    { value: 'kolkata', label: 'Kolkata' },
-  ];
+  const [cities,    setCities]    = useState<string[]>([]);
+  const [amenities, setAmenities] = useState<Amenity[]>([]);
+  const [areas,     setAreas]     = useState<string[]>([]);
+  const [types,     setTypes]     = useState<string[]>([]);
 
-  const propertyTypes = [
-    { value: '', label: 'any property' },
-    { value: 'apartment', label: 'apartment' },
-    { value: 'house', label: 'independent house' },
-    { value: 'villa', label: 'villa' },
-    { value: 'plot', label: 'land/plot' },
-    { value: 'commercial', label: 'commercial space' },
-  ];
+  const [category,    setCategory]    = useState('');
+  const [typeId,      setTypeId]      = useState('');
+  const [city,        setCity]        = useState('');
+  const [area,        setArea]        = useState('');
+  const [budgetIndex, setBudgetIndex] = useState(0);
+  const [amenityId,   setAmenityId]   = useState('');
+  const [groupBuy,    setGroupBuy]    = useState('no');
 
-  const priceRanges = [
-    { value: '', label: 'any budget' },
-    { value: '0-50', label: 'under 50 Lakhs' },
-    { value: '50-100', label: '50-100 Lakhs' },
-    { value: '100-200', label: '1-2 Crores' },
-    { value: '200-500', label: '2-5 Crores' },
-    { value: '500+', label: 'above 5 Crores' },
-  ];
+  /* Fetch cities + amenities on mount */
+  useEffect(() => {
+    const sb = createClient();
 
-  const bedroomOptions = [
-    { value: '', label: 'any bedrooms' },
-    { value: '1', label: '1 bedroom' },
-    { value: '2', label: '2 bedrooms' },
-    { value: '3', label: '3 bedrooms' },
-    { value: '4', label: '4 bedrooms' },
-    { value: '5', label: '5+ bedrooms' },
-  ];
+    sb.from('properties')
+      .select('location_city')
+      .eq('status', 'active')
+      .is('deleted_at', null)
+      .then(({ data }) => {
+        const unique = [
+          ...new Set((data ?? []).map(r => r.location_city as string).filter(Boolean)),
+        ].sort();
+        setCities(unique);
+      });
 
-  const areaRanges = [
-    { value: '', label: 'any size' },
-    { value: '0-500', label: 'under 500 sq.ft.' },
-    { value: '500-1000', label: '500-1000 sq.ft.' },
-    { value: '1000-1500', label: '1000-1500 sq.ft.' },
-    { value: '1500-2000', label: '1500-2000 sq.ft.' },
-    { value: '2000+', label: 'above 2000 sq.ft.' },
-  ];
+    sb.from('amenities')
+      .select('id, title, icon_url')
+      .order('title')
+      .then(({ data }) => setAmenities((data ?? []) as Amenity[]));
 
-  const furnishingOptions = [
-    { value: '', label: 'any furnishing' },
-    { value: 'unfurnished', label: 'unfurnished' },
-    { value: 'semi-furnished', label: 'semi-furnished' },
-    { value: 'fully-furnished', label: 'fully furnished' },
-  ];
+    sb.from('properties')
+      .select('property_type')
+      .eq('status', 'active')
+      .is('deleted_at', null)
+      .not('property_type', 'is', null)
+      .then(({ data }) => {
+        const uniqueTypes = [
+          ...new Set((data ?? []).map(r => r.property_type as string).filter(Boolean)),
+        ].sort();
+        setTypes(uniqueTypes);
+      });
+  }, []);
 
-  const ageOptions = [
-    { value: '', label: 'any age' },
-    { value: '0-1', label: 'under 1 year' },
-    { value: '1-5', label: '1-5 years' },
-    { value: '5-10', label: '5-10 years' },
-    { value: '10+', label: 'above 10 years' },
-  ];
+  /* Fetch distinct areas whenever city changes */
+  useEffect(() => {
+    setArea('');
+    setAreas([]);
+    if (!city) return;
+    createClient()
+      .from('properties')
+      .select('location_area')
+      .eq('status', 'active')
+      .is('deleted_at', null)
+      .eq('location_city', city)
+      .then(({ data }) => {
+        const unique = [
+          ...new Set(
+            (data ?? [])
+              .map(r => r.location_area as string | null)
+              .filter((a): a is string => !!a && a.trim() !== '')
+          ),
+        ].sort();
+        setAreas(unique);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [city]);
 
-  const parkingOptions = [
-    { value: '', label: 'any parking' },
-    { value: 'none', label: 'no parking' },
-    { value: '1', label: '1 car parking' },
-    { value: '2', label: '2 car parking' },
-    { value: '3+', label: '3+ car parking' },
-  ];
-
-  const facingOptions = [
-    { value: '', label: 'any facing' },
-    { value: 'north', label: 'north-facing' },
-    { value: 'south', label: 'south-facing' },
-    { value: 'east', label: 'east-facing' },
-    { value: 'west', label: 'west-facing' },
-  ];
-
-  const handleFilterChange = (key: keyof SearchFilters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+  /* Apply a popular search preset — fills the sentence, doesn't navigate */
+  const applyPreset = (preset: typeof POPULAR[number]) => {
+    if (preset.state.category    !== undefined) setCategory(preset.state.category);
+    if (preset.state.typeId      !== undefined) setTypeId(preset.state.typeId);
+    if (preset.state.city        !== undefined) { setCity(preset.state.city); setArea(''); }
+    if (preset.state.area        !== undefined) setArea(preset.state.area);
+    if (preset.state.budgetIndex !== undefined) setBudgetIndex(preset.state.budgetIndex);
+    if (preset.state.groupBuy    !== undefined) setGroupBuy(preset.state.groupBuy);
   };
 
+  /* Build URL and navigate */
   const handleSearch = () => {
-    // Build query string from filters
-    const queryParams = new URLSearchParams();
-    
-    if (filters.location) queryParams.set('location', filters.location);
-    if (filters.propertyType) queryParams.set('type', filters.propertyType);
-    if (filters.minPrice) queryParams.set('minPrice', filters.minPrice.toString());
-    if (filters.maxPrice) queryParams.set('maxPrice', filters.maxPrice.toString());
-    if (filters.minBedrooms) queryParams.set('minBedrooms', filters.minBedrooms.toString());
-    if (filters.minBathrooms) queryParams.set('minBathrooms', filters.minBathrooms.toString());
-    if (filters.minArea) queryParams.set('minArea', filters.minArea.toString());
-    if (filters.maxArea) queryParams.set('maxArea', filters.maxArea.toString());
-    if (filters.furnishing) queryParams.set('furnishing', filters.furnishing);
-    if (filters.age) queryParams.set('age', filters.age);
-    if (filters.parking) queryParams.set('parking', filters.parking);
-    if (filters.facing) queryParams.set('facing', filters.facing);
-    if (filters.amenities && filters.amenities.length > 0) {
-      queryParams.set('amenities', filters.amenities.join(','));
-    }
-
-    // Redirect to properties page with filters
-    const queryString = queryParams.toString();
-    window.location.href = `/properties${queryString ? '?' + queryString : ''}`;
+    const params = new URLSearchParams();
+    const budget = BUDGET_OPTIONS[budgetIndex];
+    if (category)        params.set('category', category);
+    if (typeId)          params.set('typeId', typeId);
+    if (city)            params.set('city', city);
+    if (area)            params.set('area', area);
+    if (budget.min)      params.set('minPrice', budget.min);
+    if (budget.max)      params.set('maxPrice', budget.max);
+    if (amenityId)       params.set('amenities', amenityId);
+    if (groupBuy === 'yes') params.set('group', 'true');
+    router.push(`/properties?${params.toString()}`);
   };
 
-  const handlePriceRangeChange = (value: string) => {
-    if (value === '') {
-      setFilters(prev => ({ ...prev, minPrice: undefined, maxPrice: undefined }));
-    } else if (value === '0-50') {
-      setFilters(prev => ({ ...prev, minPrice: 0, maxPrice: 50 }));
-    } else if (value === '50-100') {
-      setFilters(prev => ({ ...prev, minPrice: 50, maxPrice: 100 }));
-    } else if (value === '100-200') {
-      setFilters(prev => ({ ...prev, minPrice: 100, maxPrice: 200 }));
-    } else if (value === '200-500') {
-      setFilters(prev => ({ ...prev, minPrice: 200, maxPrice: 500 }));
-    } else if (value === '500+') {
-      setFilters(prev => ({ ...prev, minPrice: 500, maxPrice: undefined }));
-    }
-  };
-
-  const handleAreaRangeChange = (value: string) => {
-    if (value === '') {
-      setFilters(prev => ({ ...prev, minArea: undefined, maxArea: undefined }));
-    } else if (value === '0-500') {
-      setFilters(prev => ({ ...prev, minArea: 0, maxArea: 500 }));
-    } else if (value === '500-1000') {
-      setFilters(prev => ({ ...prev, minArea: 500, maxArea: 1000 }));
-    } else if (value === '1000-1500') {
-      setFilters(prev => ({ ...prev, minArea: 1000, maxArea: 1500 }));
-    } else if (value === '1500-2000') {
-      setFilters(prev => ({ ...prev, minArea: 1500, maxArea: 2000 }));
-    } else if (value === '2000+') {
-      setFilters(prev => ({ ...prev, minArea: 2000, maxArea: undefined }));
-    }
-  };
+  /* Whether any field is filled (controls sentence highlight) */
+  const budgetLabel = BUDGET_OPTIONS[budgetIndex].label;
 
   return (
     <div style={{
       background: 'var(--color-surface)',
       border: '1px solid var(--color-border-subtle)',
       borderRadius: 'var(--radius-xl)',
-      padding: '32px',
-      margin: '16px 24px',
-      boxShadow: 'var(--shadow-card)'
+      padding: '24px 20px 20px',
+      margin: '12px 16px 4px',
+      boxShadow: 'var(--shadow-card)',
     }}>
+
       {/* Header */}
-      <div style={{
-        textAlign: 'center',
-        marginBottom: '32px'
-      }}>
-        <h3 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '1.5rem',
-          fontWeight: 700,
-          color: 'var(--color-text-primary)',
-          margin: '0 0 8px'
+      <div style={{ marginBottom: '18px' }}>
+        <p style={{
+          fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.1em',
+          color: 'var(--color-terra)', textTransform: 'uppercase', margin: '0 0 3px',
+        }}>
+          Smart Search
+        </p>
+        <h2 style={{
+          fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 700,
+          color: 'var(--color-text-primary)', margin: 0, letterSpacing: '-0.01em',
         }}>
           Find Your Perfect Property
-        </h3>
-        <p style={{
-          fontSize: '0.9rem',
-          color: 'var(--color-text-secondary)',
-          margin: 0
-        }}>
-          Complete the sentence below to search properties
-        </p>
+        </h2>
       </div>
 
-      {/* Conversational Search */}
+      {/* ── The Sentence ──────────────────────────────────────────── */}
       <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: '8px 10px',
+        padding: '18px 16px',
         background: 'var(--color-canvas)',
         borderRadius: 'var(--radius-lg)',
-        padding: '24px',
-        border: '1px solid var(--color-border-subtle)'
+        border: '1px solid var(--color-border-subtle)',
+        marginBottom: '18px',
+        lineHeight: 1,
       }}>
-        {/* Complete Conversational Search Sentence */}
-        <div style={{
-          fontSize: '1.25rem',
-          lineHeight: 2.2,
-          color: 'var(--color-text-primary)',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '24px'
-        }}>
-          <span>I want</span>
-          
-          {/* Property Type */}
-          <select
-            value={filters.propertyType || ''}
-            onChange={(e) => handleFilterChange('propertyType', e.target.value)}
-            style={{
-              padding: '8px 16px',
-              fontSize: '1.125rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            {propertyTypes.map(type => (
-              <option key={type.value} value={type.value}>{type.label}</option>
-            ))}
-          </select>
+        <Word>I&apos;m looking for</Word>
 
-          <span>located in</span>
+        <InlineDrop id="cs-category" value={category} onChange={setCategory}>
+          <option value="">any category of</option>
+          <option value="residential">residential</option>
+          <option value="commercial">commercial</option>
+        </InlineDrop>
 
-          {/* Location */}
-          <select
-            value={filters.location || ''}
-            onChange={(e) => handleFilterChange('location', e.target.value)}
-            style={{
-              padding: '8px 16px',
-              fontSize: '1.125rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            {locations.map(location => (
-              <option key={location.value} value={location.value}>{location.label}</option>
-            ))}
-          </select>
+        <InlineDrop id="cs-type" value={typeId} onChange={setTypeId}>
+          <option value="">property</option>
+          {types.map(t => <option key={t} value={t}>{t.toLowerCase()}</option>)}
+        </InlineDrop>
 
-          <span>with</span>
+        <Word>in</Word>
 
-          {/* Bedrooms */}
-          <select
-            value={filters.minBedrooms?.toString() || ''}
-            onChange={(e) => handleFilterChange('minBedrooms', e.target.value ? Number(e.target.value) : undefined)}
-            style={{
-              padding: '8px 16px',
-              fontSize: '1.125rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            {bedroomOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
+        <InlineDrop id="cs-city" value={city} onChange={v => { setCity(v); setArea(''); }}>
+          <option value="">any city</option>
+          {cities.map(c => <option key={c} value={c}>{c}</option>)}
+        </InlineDrop>
 
-          <span>and</span>
+        {/* Area — only appears when a city is chosen and has areas */}
+        {city && areas.length > 0 && (
+          <>
+            <Word>in</Word>
+            <InlineDrop id="cs-area" value={area} onChange={setArea}>
+              <option value="">any area</option>
+              {areas.map(a => <option key={a} value={a}>{a}</option>)}
+            </InlineDrop>
+          </>
+        )}
 
-          {/* Bathrooms */}
-          <select
-            value={filters.minBathrooms?.toString() || ''}
-            onChange={(e) => handleFilterChange('minBathrooms', e.target.value ? Number(e.target.value) : undefined)}
-            style={{
-              padding: '8px 16px',
-              fontSize: '1.125rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            <option value="">any bathrooms</option>
-            <option value="1">1 bathroom</option>
-            <option value="2">2 bathrooms</option>
-            <option value="3">3 bathrooms</option>
-            <option value="4">4+ bathrooms</option>
-          </select>
+        <Word>with</Word>
 
-          <span>within</span>
+        <InlineDrop
+          id="cs-budget"
+          value={String(budgetIndex)}
+          onChange={v => setBudgetIndex(Number(v))}
+        >
+          {BUDGET_OPTIONS.map((b, i) => (
+            <option key={b.label} value={String(i)}>{b.label}</option>
+          ))}
+        </InlineDrop>
 
-          {/* Price Range */}
-          <select
-            value={(() => {
-              if (!filters.minPrice && !filters.maxPrice) return '';
-              if (filters.minPrice === 0 && filters.maxPrice === 50) return '0-50';
-              if (filters.minPrice === 50 && filters.maxPrice === 100) return '50-100';
-              if (filters.minPrice === 100 && filters.maxPrice === 200) return '100-200';
-              if (filters.minPrice === 200 && filters.maxPrice === 500) return '200-500';
-              if (filters.minPrice === 500 && !filters.maxPrice) return '500+';
-              return '';
-            })()}
-            onChange={(e) => handlePriceRangeChange(e.target.value)}
-            style={{
-              padding: '8px 16px',
-              fontSize: '1.125rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            {priceRanges.map(range => (
-              <option key={range.value} value={range.value}>{range.label}</option>
-            ))}
-          </select>
+        {amenities.length > 0 && (
+          <>
+            <Word>that has</Word>
+            <InlineDrop id="cs-amenity" value={amenityId} onChange={setAmenityId}>
+              <option value="">any amenities</option>
+              {amenities.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
+            </InlineDrop>
+          </>
+        )}
 
-          <span>and</span>
+        <Word>and is</Word>
 
-          {/* Area Range */}
-          <select
-            value={(() => {
-              if (!filters.minArea && !filters.maxArea) return '';
-              if (filters.minArea === 0 && filters.maxArea === 500) return '0-500';
-              if (filters.minArea === 500 && filters.maxArea === 1000) return '500-1000';
-              if (filters.minArea === 1000 && filters.maxArea === 1500) return '1000-1500';
-              if (filters.minArea === 1500 && filters.maxArea === 2000) return '1500-2000';
-              if (filters.minArea === 2000 && !filters.maxArea) return '2000+';
-              return '';
-            })()}
-            onChange={(e) => handleAreaRangeChange(e.target.value)}
-            style={{
-              padding: '8px 16px',
-              fontSize: '1.125rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            {areaRanges.map(range => (
-              <option key={range.value} value={range.value}>{range.label}</option>
-            ))}
-          </select>
-
-          <span>that is</span>
-
-          {/* Furnishing */}
-          <select
-            value={filters.furnishing || ''}
-            onChange={(e) => handleFilterChange('furnishing', e.target.value)}
-            style={{
-              padding: '6px 14px',
-              fontSize: '1rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            {furnishingOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-
-          <span>and</span>
-
-          {/* Age */}
-          <select
-            value={filters.age || ''}
-            onChange={(e) => handleFilterChange('age', e.target.value)}
-            style={{
-              padding: '6px 14px',
-              fontSize: '1rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            {ageOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-
-          <span>old</span>
-
-          <span>with</span>
-
-          {/* Parking */}
-          <select
-            value={filters.parking || ''}
-            onChange={(e) => handleFilterChange('parking', e.target.value)}
-            style={{
-              padding: '6px 14px',
-              fontSize: '1rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            {parkingOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-
-          <span>and</span>
-
-          {/* Facing */}
-          <select
-            value={filters.facing || ''}
-            onChange={(e) => handleFilterChange('facing', e.target.value)}
-            style={{
-              padding: '6px 14px',
-              fontSize: '1rem',
-              color: 'var(--color-terra)',
-              background: 'var(--color-terra-muted)',
-              border: '1px solid var(--color-terra)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outline: 'none'
-            }}
-          >
-            {facingOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-
-          <span>facing</span>
-        </div>
-
-        {/* Search Button */}
-        <div style={{ marginTop: '24px', textAlign: 'center' }}>
-          <button
-            onClick={handleSearch}
-            style={{
-              padding: '14px 32px',
-              background: 'var(--color-terra)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '1rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <Search size={18} />
-            Search Properties
-          </button>
-        </div>
+        <InlineDrop id="cs-group" value={groupBuy} onChange={setGroupBuy}>
+          <option value="no">a single buy property</option>
+          <option value="yes">a group buy deal</option>
+        </InlineDrop>
       </div>
 
-      {/* Quick Examples */}
-      <div style={{ marginTop: '24px' }}>
+      {/* ── Search button ──────────────────────────────────────────── */}
+      <button
+        id="cs-search-btn"
+        onClick={handleSearch}
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          padding: '13px 24px',
+          background: 'var(--color-terra)',
+          color: '#fff',
+          border: 'none',
+          borderRadius: 'var(--radius-pill)',
+          fontFamily: 'var(--font-ui)',
+          fontSize: '0.9375rem',
+          fontWeight: 700,
+          cursor: 'pointer',
+          boxShadow: 'var(--shadow-cta)',
+          transition: 'background 0.15s ease',
+          marginBottom: '18px',
+        }}
+      >
+        <Search size={17} strokeWidth={2.5} />
+        Search Properties
+      </button>
+
+      {/* ── Popular searches — pre-fill the sentence ───────────────── */}
+      <div style={{
+        borderTop: '1px solid var(--color-border-subtle)',
+        paddingTop: '14px',
+      }}>
         <p style={{
-          fontSize: '0.875rem',
-          color: 'var(--color-text-secondary)',
-          marginBottom: '12px',
-          fontWeight: 600
+          fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em',
+          color: 'var(--color-text-muted)', marginBottom: '10px',
+          textTransform: 'uppercase',
         }}>
-          Popular Searches:
+          Quick Fill
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {[
-            { location: 'mumbai', propertyType: 'apartment', minBedrooms: 2, label: '2 BHK in Mumbai' },
-            { location: 'bangalore', propertyType: 'villa', label: 'Villa in Bangalore' },
-            { location: 'pune', propertyType: 'apartment', minBedrooms: 3, label: '3 BHK in Pune' },
-            { location: 'delhi', propertyType: 'house', label: 'House in Delhi' },
-          ].map((example, index) => (
+          {POPULAR.map(p => (
             <button
-              key={index}
-              onClick={() => {
-                setFilters({
-                  location: example.location,
-                  propertyType: example.propertyType,
-                  minBedrooms: example.minBedrooms
-                });
-              }}
+              key={p.label}
+              onClick={() => applyPreset(p)}
               style={{
-                padding: '6px 12px',
-                background: 'var(--color-canvas)',
-                border: '1px solid var(--color-border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                fontSize: '0.8rem',
+                padding: '7px 14px',
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border-default)',
+                borderRadius: 'var(--radius-pill)',
+                fontSize: '0.8125rem',
                 color: 'var(--color-text-secondary)',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                fontFamily: 'var(--font-ui)',
+                fontWeight: 500,
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap',
               }}
             >
-              {example.label}
+              ↗ {p.label}
             </button>
           ))}
         </div>
       </div>
+
     </div>
   );
 }

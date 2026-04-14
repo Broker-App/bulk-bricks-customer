@@ -6,7 +6,6 @@ import { Star, Users, MapPin, ArrowUpDown, Home, IndianRupee, X } from 'lucide-r
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { createClient } from '@/lib/supabase/client';
-import type { Category } from '@/types';
 
 interface FilterSheetProps {
   open: boolean;
@@ -52,7 +51,7 @@ export function FilterSheet({ open, onClose }: FilterSheetProps) {
   const searchParams = useSearchParams();
 
   // ── State ─────────────────────────────────────────────────────
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [propertyTypes, setPropertyTypes] = useState<string[]>([]);
   const [cities,     setCities]     = useState<string[]>([]);
   const [areas,      setAreas]      = useState<string[]>([]);
   const [loadingAreas, setLoadingAreas] = useState(false);
@@ -72,12 +71,18 @@ export function FilterSheet({ open, onClose }: FilterSheetProps) {
     if (!open) return;
     const sb = createClient();
 
-    if (categories.length === 0) {
-      sb.from('categories')
-        .select('id, name, slug, parent_id')
-        .is('parent_id', null)
-        .order('name')
-        .then(({ data }) => setCategories((data ?? []) as Category[]));
+    if (propertyTypes.length === 0) {
+      sb.from('properties')
+        .select('property_type')
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .not('property_type', 'is', null)
+        .then(({ data }) => {
+          const uniqueTypes = [
+            ...new Set((data ?? []).map(r => r.property_type as string).filter(Boolean)),
+          ].sort();
+          setPropertyTypes(uniqueTypes);
+        });
     }
 
     if (cities.length === 0) {
@@ -120,8 +125,8 @@ export function FilterSheet({ open, onClose }: FilterSheetProps) {
   }, [city]);
 
   // ── Active filter count ───────────────────────────────────────
-  const activeCount = [category, typeId, city, area, minPrice, maxPrice, sortBy, featured, groupEnabled]
-    .filter(v => !!v && v !== false).length;
+  const activeCount = [category, typeId, city, area, minPrice, maxPrice, sortBy]
+    .filter(v => !!v).length + (featured ? 1 : 0) + (groupEnabled ? 1 : 0);
 
   // ── Preset price helper ───────────────────────────────────────
   const applyPreset = (preset: typeof PRICE_PRESETS[number]) => {
@@ -195,62 +200,65 @@ export function FilterSheet({ open, onClose }: FilterSheetProps) {
           </div>
         </div>
 
-        {/* ── Property Type (categories table) ── */}
-        {categories.length > 0 && (
+        {/* Location Fields in Columns */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+          {/* Property Type */}
+          {propertyTypes.length > 0 && (
+            <div>
+              <label style={labelStyle}>
+                Property Type
+                {typeId && <ClearBtn onClick={() => setTypeId('')} />}
+              </label>
+              <select id="filter-type" value={typeId} onChange={e => setTypeId(e.target.value)} style={selectStyle}>
+                <option value="">All Types</option>
+                {propertyTypes.map(type => <option key={type} value={type}>{type}</option>)}
+              </select>
+            </div>
+          )}
+
+          {/* City */}
           <div>
             <label style={labelStyle}>
-              Property Type
-              {typeId && <ClearBtn onClick={() => setTypeId('')} />}
+              <MapPin size={13} /> City
+              {city && <ClearBtn onClick={() => { setCity(''); setArea(''); setAreas([]); }} />}
             </label>
-            <select id="filter-type" value={typeId} onChange={e => setTypeId(e.target.value)} style={selectStyle}>
-              <option value="">All Types</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            <select id="filter-city" value={city} onChange={e => setCity(e.target.value)} style={selectStyle}>
+              <option value="">All Cities</option>
+              {cities.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-        )}
 
-        {/* ── City ── */}
-        <div>
-          <label style={labelStyle}>
-            <MapPin size={13} /> City
-            {city && <ClearBtn onClick={() => { setCity(''); setArea(''); setAreas([]); }} />}
-          </label>
-          <select id="filter-city" value={city} onChange={e => setCity(e.target.value)} style={selectStyle}>
-            <option value="">All Cities</option>
-            {cities.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          {/* Area shown only when a city is selected */}
+          {city && (
+            <div>
+              <label style={labelStyle}>
+                <MapPin size={13} /> Area / Neighbourhood
+                {area && <ClearBtn onClick={() => setArea('')} />}
+              </label>
+              <select
+                id="filter-area"
+                value={area}
+                onChange={e => setArea(e.target.value)}
+                style={{
+                  ...selectStyle,
+                  opacity: loadingAreas ? 0.6 : 1,
+                }}
+                disabled={loadingAreas || areas.length === 0}
+              >
+                {loadingAreas ? (
+                  <option value="">Loading areas…</option>
+                ) : areas.length === 0 ? (
+                  <option value="">No specific areas found</option>
+                ) : (
+                  <>
+                    <option value="">All areas in {city}</option>
+                    {areas.map(a => <option key={a} value={a}>{a}</option>)}
+                  </>
+                )}
+              </select>
+            </div>
+          )}
         </div>
-
-        {/* ── Area — shown only when a city is selected ── */}
-        {city && (
-          <div>
-            <label style={labelStyle}>
-              <MapPin size={13} /> Area / Neighbourhood
-              {area && <ClearBtn onClick={() => setArea('')} />}
-            </label>
-            <select
-              id="filter-area"
-              value={area}
-              onChange={e => setArea(e.target.value)}
-              style={{
-                ...selectStyle,
-                opacity: loadingAreas ? 0.6 : 1,
-              }}
-              disabled={loadingAreas || areas.length === 0}
-            >
-              {loadingAreas ? (
-                <option value="">Loading areas…</option>
-              ) : areas.length === 0 ? (
-                <option value="">No specific areas found</option>
-              ) : (
-                <>
-                  <option value="">All areas in {city}</option>
-                  {areas.map(a => <option key={a} value={a}>{a}</option>)}
-                </>
-              )}
-            </select>
-          </div>
-        )}
 
         {/* ── Budget ── */}
         <div>

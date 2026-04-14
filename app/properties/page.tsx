@@ -21,6 +21,7 @@ interface PageProps {
     featured?: string;
     group?: string;
     sortBy?: string;
+    amenities?: string;   // comma-separated amenity IDs
     page?: string;
   }>;
 }
@@ -40,6 +41,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     isFeatured:     sp.featured === 'true',
     isGroupEnabled: sp.group === 'true',
     sortBy:         sp.sortBy as PropertyFilters['sortBy'],
+    amenityIds:     sp.amenities ? sp.amenities.split(',').filter(Boolean) : undefined,
     page,
     pageSize:       12,
   });

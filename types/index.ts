@@ -67,7 +67,7 @@ export interface PropertyImage {
 export interface Property {
   id: string;
   builder_id: string;
-  property_type_id: string | null;
+  property_type: string | null;
   title: string;
   description: string | null;
   category: PropertyCategory;
@@ -91,7 +91,6 @@ export interface Property {
   builder?: Builder;
   images?: PropertyImage[];
   amenities?: { amenity: Amenity }[];
-  property_type?: Category;
 }
 
 // ─── Access Gate ──────────────────────────────────────────────────────────────
@@ -163,12 +162,13 @@ export interface PropertyFilters {
   search?: string;
   category?: PropertyCategory;
   city?: string;
-  area?: string;           // location_area ilike search
+  area?: string;
   minPrice?: number;
   maxPrice?: number;
   isFeatured?: boolean;
   isGroupEnabled?: boolean;
   typeId?: string;
+  amenityIds?: string[];
   sortBy?: 'price_asc' | 'price_desc' | 'newest' | 'featured';
   page?: number;
   pageSize?: number;

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { Users, BadgePercent, ArrowUpRight } from 'lucide-react';
 import { SearchBar } from '@/components/search/SearchBar';
+import { CategoryPills } from '../search/CategoryPills';
 
 /* ─── Feature card ────────────────────────────────────────────── */
 function FeatureCard({
@@ -153,6 +154,9 @@ export function HeroSection() {
       <div className="hero-search-outer">
         <Suspense fallback={null}>
           <SearchBar />
+          {/* ── Category Pills ─────────────────────────────────────────────── */}
+          <CategoryPills />
+
         </Suspense>
       </div>
 

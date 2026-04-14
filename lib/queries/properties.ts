@@ -13,11 +13,20 @@ export async function fetchDistinctCities(): Promise<string[]> {
   return [...new Set(data.map((r) => r.location_city as string).filter(Boolean))].sort();
 }
 
+/** All amenities — used for amenity filter chips */
+export async function fetchAmenities() {
+  const supabase = await createClient();
+  return supabase
+    .from('amenities')
+    .select('id, title, icon_url')
+    .order('title');
+}
+
 export async function fetchProperties(filters: PropertyFilters = {}) {
   const supabase = await createClient();
   const {
     search = '', category, city, area, isFeatured, isGroupEnabled,
-    minPrice, maxPrice, typeId, sortBy,
+    minPrice, maxPrice, typeId, sortBy, amenityIds,
     page = 0, pageSize = 12,
   } = filters;
 
@@ -31,7 +40,7 @@ export async function fetchProperties(filters: PropertyFilters = {}) {
       created_at,
       builder:builders(id, company_name, logo_url, status),
       images:property_images(url, alt_text, is_cover, sort_order),
-      property_type:categories(name, slug)
+      property_type
     `,
       { count: 'exact' }
     )
@@ -46,9 +55,23 @@ export async function fetchProperties(filters: PropertyFilters = {}) {
   if (area)             query = query.ilike('location_area', `%${area}%`);
   if (isFeatured)       query = query.eq('is_featured', true);
   if (isGroupEnabled)   query = query.eq('is_group_enabled', true);
-  if (filters.minPrice) query = query.gte('target_price', filters.minPrice);
-  if (filters.maxPrice) query = query.lte('target_price', filters.maxPrice);
-  if (typeId)           query = query.eq('property_type_id', typeId);
+  if (minPrice)         query = query.gte('target_price', minPrice);
+  if (maxPrice)         query = query.lte('target_price', maxPrice);
+  if (typeId)           query = query.eq('property_type', typeId);
+
+  // Amenity filter — two-step: get matching property IDs first
+  if (amenityIds && amenityIds.length > 0) {
+    const { data: paRows } = await supabase
+      .from('property_amenities')
+      .select('property_id')
+      .in('amenity_id', amenityIds);
+    const ids = [...new Set((paRows ?? []).map((r) => r.property_id as string))];
+    if (ids.length === 0) {
+      // No properties have these amenities — return empty immediately
+      return { data: [], count: 0, error: null, status: 200, statusText: 'OK' };
+    }
+    query = query.in('id', ids);
+  }
 
   // Sorting
   if (sortBy === 'price_asc')  return query.order('target_price', { ascending: true }).range(page * pageSize, (page + 1) * pageSize - 1);
@@ -71,7 +94,7 @@ export async function fetchPropertyDetail(id: string) {
       builder:builders(id, company_name, logo_url, status, website_url, verified_at),
       images:property_images(id, url, alt_text, sort_order, is_cover),
       amenities:property_amenities(amenity:amenities(id, title, icon_url)),
-      property_type:categories(id, name, slug)
+      property_type
     `
     )
     .eq('id', id)

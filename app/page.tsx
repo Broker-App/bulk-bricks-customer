@@ -4,7 +4,6 @@ import { Search, Unlock, MessageCircle, Users } from 'lucide-react';
 import { fetchProperties } from '@/lib/queries/properties';
 import { PropertyCarousel } from '@/components/property/PropertyCarousel';
 import { PropertyGrid } from '@/components/property/PropertyGrid';
-import { CategoryPills } from '@/components/search/CategoryPills';
 import { WhatsAppButton } from '@/components/home/WhatsAppButton';
 import { HeroSection } from '@/components/home/HeroSection';
 import { ConversationalSearch } from '@/components/search/ConversationalSearch';
@@ -30,11 +29,6 @@ export default async function HomePage() {
     <div style={{ background: 'var(--color-canvas)', minHeight: '100dvh' }}>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <HeroSection />
-
-      {/* ── Category Pills ─────────────────────────────────────────────── */}
-      <Suspense fallback={null}>
-        <CategoryPills />
-      </Suspense>
 
       <div>
         <Suspense fallback={null}>
