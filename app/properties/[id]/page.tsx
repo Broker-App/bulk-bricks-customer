@@ -32,9 +32,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   if (!data) notFound();
 
   const property = data as unknown as Property;
-  const images    = property.images ?? [];
+  const images = property.images ?? [];
   const amenities = (property.amenities ?? []).map((a: { amenity: Amenity }) => a.amenity).filter(Boolean);
-  const builder   = property.builder;
+  const builder = property.builder;
 
   const mapUrl = property.google_maps_url
     ?? (property.location_lat && property.location_lng
@@ -190,7 +190,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* ── Raise Ticket (MOBILE ONLY) ── */}
+            {/* Access Gate (MOBILE ONLY) */}
+            <div className="property-cta-mobile" style={{ marginBottom: '16px' }}>
+              <AccessGate property={property} inline={true} />
+            </div>
+
+            {/* Raise Ticket (MOBILE ONLY) */}
             <div className="property-cta-mobile">
               <RaiseTicketButton property={property} />
             </div>
@@ -209,39 +214,57 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                   padding: '24px',
                   boxShadow: 'var(--shadow-card)',
                 }}>
-                  <p style={{
-                    fontSize: '0.69rem', fontWeight: 700, letterSpacing: '0.1em',
-                    textTransform: 'uppercase', color: 'var(--color-text-muted)', margin: '0 0 8px',
-                  }}>
-                    Target Price
-                  </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                    <span style={{
-                      fontFamily: 'var(--font-display)', fontSize: '2.25rem',
-                      fontWeight: 700, color: 'var(--color-terra)', letterSpacing: '-0.03em', lineHeight: 1,
-                    }}>
-                      {formatINR(property.target_price)}
-                    </span>
-                    {savings != null && savings > 0 && (
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '4px',
-                        padding: '4px 10px', background: 'var(--color-success-bg)',
-                        border: '1px solid var(--color-success)', borderRadius: '99px',
-                        fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-success)',
-                      }}>
-                        <TrendingDown size={12} strokeWidth={2.5} />
-                        {formatINR(savings)} off
-                      </span>
-                    )}
-                  </div>
-                  {property.dev_price != null && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '20px' }}>
-                      <span style={{ fontSize: '0.9375rem', color: 'var(--color-text-muted)', textDecoration: 'line-through' }}>
-                        {formatINR(property.dev_price)}
-                      </span>
-                      <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>Market price</span>
+                  <div style={{ display: 'flex', flexDirection: 'row', gap: '16px' }}>
+                    <div style={{ flexGrow: 1 }}>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+
+                        <p style={{
+                          fontSize: '0.69rem', fontWeight: 700, letterSpacing: '0.1em',
+                          textTransform: 'uppercase', color: 'var(--color-text-muted)', margin: '0',
+                        }}>
+                          Target Price
+                        </p>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <span style={{
+                          fontFamily: 'var(--font-display)', fontSize: '2.25rem',
+                          fontWeight: 700, color: 'var(--color-terra)', letterSpacing: '-0.03em', lineHeight: 1,
+                        }}>
+                          {formatINR(property.target_price)}
+                        </span>
+                        {savings != null && savings > 0 && (
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '4px',
+                            padding: '4px 10px', background: 'var(--color-success-bg)',
+                            border: '1px solid var(--color-success)', borderRadius: '99px',
+                            fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-success)',
+                          }}>
+                            <TrendingDown size={12} strokeWidth={2.5} />
+                            {formatINR(savings)} off
+                          </span>
+                        )}
+                      </div>
+                      {property.dev_price != null && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '20px' }}>
+                          <span style={{ fontSize: '0.9375rem', color: 'var(--color-text-muted)', textDecoration: 'line-through' }}>
+                            {formatINR(property.dev_price)}
+                          </span>
+                          <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>Market price</span>
+                        </div>
+                      )}
                     </div>
-                  )}
+
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'flex-end',
+                      flexShrink: 0
+                    }}>
+                      <AccessGate property={property} inline={true} />
+                    </div>
+                  </div>
                   {/* Raise ticket in sidebar */}
                   <RaiseTicketButton property={property} />
                 </div>
@@ -309,9 +332,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
         </div>
       </div>
-
-      {/* ── Access Gate FAB — fixed bottom-right ── */}
-      <AccessGate property={property} />
     </div>
   );
 }
