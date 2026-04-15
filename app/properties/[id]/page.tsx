@@ -309,7 +309,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               )}
 
               {/* Map link */}
-              {mapUrl && (
+              {/* {mapUrl && (
                 <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{
                   display: 'flex', alignItems: 'center', gap: '10px',
                   background: 'var(--color-surface)',
@@ -326,7 +326,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                   View on Map
                   <ExternalLink size={14} style={{ marginLeft: 'auto', opacity: 0.6 }} />
                 </a>
-              )}
+              )} */}
             </div>
           </div>
 

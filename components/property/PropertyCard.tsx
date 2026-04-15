@@ -36,139 +36,179 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
     <div className="pwa-card" style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
 
       {/* ── Image ──────────────────────────────────────────────────── */}
-      <Link href={`/properties/${property.id}`} style={{ display: 'block', textDecoration: 'none' }}>
-        <div style={{
-          width: '100%',
-          aspectRatio: compact ? '16/9' : '16/9',
-          background: 'var(--color-img-placeholder)',
-          position: 'relative',
-          overflow: 'hidden',
-          borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
-        }}>
-          {coverImage ? (
-            <Image
-              src={coverImage.url}
-              alt={coverImage.alt_text ?? property.title}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              style={{ objectFit: 'cover' }}
-            />
-          ) : (
+      <div style={{ position: 'relative' }}>
+        <Link href={`/properties/${property.id}`} style={{ display: 'block', textDecoration: 'none' }}>
+          <div style={{
+            width: '100%',
+            aspectRatio: compact ? '16/9' : '16/9',
+            background: 'var(--color-img-placeholder)',
+            position: 'relative',
+            overflow: 'hidden',
+            borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
+          }}>
+            {coverImage ? (
+              <Image
+                src={coverImage.url}
+                alt={coverImage.alt_text ?? property.title}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                style={{ objectFit: 'cover' }}
+              />
+            ) : (
+              <div style={{
+                width: '100%', height: '100%', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                color: 'var(--color-text-muted)', fontSize: '0.8125rem',
+                flexDirection: 'column', gap: '6px',
+              }}>
+                <Images size={28} strokeWidth={1.5} />
+                No Image
+              </div>
+            )}
+
+            {/* Gradient scrim at bottom for legibility */}
             <div style={{
-              width: '100%', height: '100%', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-              color: 'var(--color-text-muted)', fontSize: '0.8125rem',
-              flexDirection: 'column', gap: '6px',
-            }}>
-              <Images size={28} strokeWidth={1.5} />
-              No Image
-            </div>
-          )}
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%)',
+              pointerEvents: 'none',
+            }} />
+          </div>
+        </Link>
 
-          {/* Gradient scrim at bottom for legibility */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%)',
-            pointerEvents: 'none',
-          }} />
 
-          {/* ── Bottom-left: location pill ── */}
+        {/* ── Bottom-right: image count pill ── */}
+        {imageCount > 0 && (
           <div style={{
-            position: 'absolute', bottom: '10px', left: '10px',
+            position: 'absolute', bottom: '10px', right: '10px',
             display: 'flex', alignItems: 'center', gap: '4px',
             background: 'rgba(0,0,0,0.52)',
             backdropFilter: 'blur(6px)',
             WebkitBackdropFilter: 'blur(6px)',
             borderRadius: '99px',
             padding: '4px 10px',
+            pointerEvents: 'none',
           }}>
-            <MapPin size={11} color="#FFFFFF" strokeWidth={2.5} />
-            <span style={{
-              fontSize: '0.75rem', fontWeight: 600, color: '#FFFFFF',
-              lineHeight: 1, whiteSpace: 'nowrap',
-            }}>
-              {property.location_city}
+            <Images size={11} color="#FFFFFF" strokeWidth={2} />
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#FFFFFF', lineHeight: 1 }}>
+              {imageCount}
             </span>
           </div>
+        )}
 
-          {/* ── Bottom-right: image count pill ── */}
-          {imageCount > 0 && (
+        {/* ── Top-left: Featured badge ── */}
+        {property.is_featured && (
+          <div style={{
+            position: 'absolute', top: '10px', left: '10px',
+            display: 'flex', alignItems: 'center', gap: '5px',
+            background: 'rgba(255,255,255,0.96)',
+            borderRadius: '99px',
+            padding: '4px 10px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+            pointerEvents: 'none',
+          }}>
             <div style={{
-              position: 'absolute', bottom: '10px', right: '10px',
-              display: 'flex', alignItems: 'center', gap: '4px',
-              background: 'rgba(0,0,0,0.52)',
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
-              borderRadius: '99px',
-              padding: '4px 10px',
+              width: '7px', height: '7px', borderRadius: '50%',
+              background: 'var(--color-warning)',
+            }} />
+            <span style={{
+              fontSize: '0.6875rem', fontWeight: 700,
+              color: 'var(--color-warning)', letterSpacing: '0.05em',
+              textTransform: 'uppercase', lineHeight: 1,
             }}>
-              <Images size={11} color="#FFFFFF" strokeWidth={2} />
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#FFFFFF', lineHeight: 1 }}>
-                {imageCount}
-              </span>
-            </div>
-          )}
+              Featured
+            </span>
+          </div>
+        )}
 
-          {/* ── Top-left: Featured badge ── */}
-          {property.is_featured && (
-            <div style={{
-              position: 'absolute', top: '10px', left: '10px',
-              display: 'flex', alignItems: 'center', gap: '5px',
-              background: 'rgba(255,255,255,0.96)',
-              borderRadius: '99px',
-              padding: '4px 10px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
-            }}>
-              <div style={{
-                width: '7px', height: '7px', borderRadius: '50%',
-                background: 'var(--color-warning)',
-              }} />
-              <span style={{
-                fontSize: '0.6875rem', fontWeight: 700,
-                color: 'var(--color-warning)', letterSpacing: '0.05em',
-                textTransform: 'uppercase', lineHeight: 1,
-              }}>
-                Featured
-              </span>
-            </div>
-          )}
+        {/* ── Sold badge ── */}
+        {property.status === 'sold' && (
+          <div style={{
+            position: 'absolute', top: '10px', left: '10px',
+            display: 'flex', alignItems: 'center', gap: '5px',
+            background: 'rgba(255,255,255,0.96)',
+            borderRadius: '99px',
+            padding: '4px 10px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+            pointerEvents: 'none',
+          }}>
+            <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--color-text-muted)' }} />
+            <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', lineHeight: 1 }}>
+              Sold
+            </span>
+          </div>
+        )}
 
-          {/* ── Sold badge ── */}
-          {property.status === 'sold' && (
-            <div style={{
-              position: 'absolute', top: '10px', left: '10px',
-              display: 'flex', alignItems: 'center', gap: '5px',
-              background: 'rgba(255,255,255,0.96)',
-              borderRadius: '99px',
-              padding: '4px 10px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
-            }}>
-              <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--color-text-muted)' }} />
-              <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', lineHeight: 1 }}>
-                Sold
-              </span>
-            </div>
-          )}
-        </div>
+        {/* ── Favourite button ── */}
+        <button
+          className={`btn-favorite${wishlisted ? ' active' : ''}`}
+          onClick={() => toggle(property.id)}
+          aria-label={wishlisted ? 'Remove from saved' : 'Save property'}
+          style={{ position: 'absolute', top: '10px', right: '10px' }}
+        >
+          <Heart
+            size={16}
+            strokeWidth={2}
+            fill={wishlisted ? 'var(--color-danger)' : 'none'}
+            color={wishlisted ? 'var(--color-danger)' : 'var(--color-text-secondary)'}
+          />
+        </button>
+      </div>
 
-        {/* ── Card body ──────────────────────────────────────────────── */}
+      {/* ── Card body ──────────────────────────────────────────────── */}
+      <Link href={`/properties/${property.id}`} style={{ textDecoration: 'none' }}>
         <div style={{ padding: '14px 14px 0' }}>
 
-          {/* Title */}
-          <h3 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1rem',
-            fontWeight: 700,
-            color: 'var(--color-text-primary)',
-            margin: '0 0 3px',
-            lineHeight: 1.3,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}>
-            {property.title}
-          </h3>
+          {/* Title and Map Pin */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <h3 style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '1rem',
+              fontWeight: 700,
+              color: 'var(--color-text-primary)',
+              margin: 0,
+              lineHeight: 1.3,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              flex: 1,
+            }}>
+              {property.title}
+            </h3>
+            
+            {/* Map Pin Button */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Use the same logic as property details page
+                const mapUrl = property.google_maps_url
+                  ?? (property.location_lat && property.location_lng
+                    ? `https://www.google.com/maps?q=${property.location_lat},${property.location_lng}`
+                    : null);
+                
+                if (mapUrl) {
+                  window.open(mapUrl, '_blank', 'noopener,noreferrer');
+                }
+              }}
+              style={{
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.borderColor = 'var(--color-terra)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.borderColor = 'var(--color-border-subtle)';
+              }}
+              title={`View ${property.location_city} on Google Maps`}
+            >
+              <MapPin size={24} color="var(--color-terra)" strokeWidth={2} />
+            </button>
+          </div>
 
           {/* Subtitle: Category · Location */}
           <p style={{
@@ -242,7 +282,7 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
                   letterSpacing: '-0.02em',
                   lineHeight: 1,
                 }}>
-                  {formatINR(property.target_price)}
+                  {formatINR(property.target_price!)}
                 </span>
                 {savings != null && savings > 0 && (
                   <span style={{
@@ -319,21 +359,6 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
           </div>
         )}
       </div>
-
-      {/* ── Favourite button ── */}
-      <button
-        className={`btn-favorite${wishlisted ? ' active' : ''}`}
-        onClick={() => toggle(property.id)}
-        aria-label={wishlisted ? 'Remove from saved' : 'Save property'}
-        style={{ position: 'absolute', top: '10px', right: '10px' }}
-      >
-        <Heart
-          size={16}
-          strokeWidth={2}
-          fill={wishlisted ? 'var(--color-danger)' : 'none'}
-          color={wishlisted ? 'var(--color-danger)' : 'var(--color-text-secondary)'}
-        />
-      </button>
     </div>
   );
 }

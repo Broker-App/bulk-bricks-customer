@@ -36,6 +36,7 @@ export async function fetchProperties(filters: PropertyFilters = {}) {
       `
       id, title, description, category, status,
       target_price, dev_price, location_city, location_area,
+      location_lat, location_lng, google_maps_url,
       is_featured, is_group_enabled, group_size, slots_filled,
       created_at,
       builder:builders(id, company_name, logo_url, status),
@@ -123,6 +124,7 @@ export async function fetchMyProperties(customerId: string) {
       id, granted_at,
        property:properties(
          id, title, target_price, dev_price, location_city, location_area,
+         location_lat, location_lng, google_maps_url,
          whatsapp_group_link, status, is_featured, is_group_enabled,
          group_size, slots_filled, created_at,
          builder:builders(id, company_name, logo_url, status),
@@ -152,6 +154,7 @@ export async function fetchMyPropertiesPaginated(
       `id, granted_at,
        property:properties(
          id, title, category, target_price, dev_price, location_city, location_area,
+         location_lat, location_lng, google_maps_url,
          whatsapp_group_link, status, is_featured, is_group_enabled,
          group_size, slots_filled, created_at,
          builder:builders(id, company_name, logo_url, status),
