@@ -33,6 +33,51 @@ const STATS = [
   { label: 'Happy Customers',    value: '2K+' },
 ];
 
+const TESTIMONIALS = [
+  {
+    name: 'Rajesh Kumar',
+    role: 'Home Buyer, Mumbai',
+    content: 'Bulk Bricks saved me ₹2.5 lakhs in brokerage! I connected directly with the builder and got all my questions answered instantly. No middleman, no hidden charges.',
+    rating: 5,
+    location: 'Mumbai, Maharashtra'
+  },
+  {
+    name: 'Priya Sharma',
+    role: 'First-time Buyer, Bangalore',
+    content: 'As a first-time home buyer, I was nervous about the process. Bulk Bricks made it so simple. I joined the builder\'s WhatsApp group and got updates directly from the source.',
+    rating: 5,
+    location: 'Bangalore, Karnataka'
+  },
+  {
+    name: 'Amit Patel',
+    role: 'Property Investor, Ahmedabad',
+    content: 'I\'ve bought 3 properties through Bulk Bricks. The transparency is unmatched. I can talk to builders directly and negotiate better deals without agent interference.',
+    rating: 5,
+    location: 'Ahmedabad, Gujarat'
+  },
+  {
+    name: 'Deepak Verma',
+    role: 'Builder, Delhi NCR',
+    content: 'Bulk Bricks has revolutionized how we connect with genuine buyers. We get serious inquiries and can communicate directly. It\'s a win-win for both builders and buyers.',
+    rating: 5,
+    location: 'Gurgaon, Haryana'
+  },
+  {
+    name: 'Sneha Reddy',
+    role: 'Home Buyer, Hyderabad',
+    content: 'The WhatsApp group feature is brilliant! I got real-time construction updates and could clarify doubts immediately. Saved time and money compared to traditional channels.',
+    rating: 5,
+    location: 'Hyderabad, Telangana'
+  },
+  {
+    name: 'Vikram Malhotra',
+    role: 'Builder, Pune',
+    content: 'We\'ve seen 40% better conversion rates since joining Bulk Bricks. Buyers who come through the platform are well-informed and serious about purchasing.',
+    rating: 5,
+    location: 'Pune, Maharashtra'
+  }
+];
+
 export default function AboutPage() {
   return (
     <div style={{ background: 'var(--color-canvas)', minHeight: '100dvh' }}>
@@ -130,6 +175,120 @@ export default function AboutPage() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section style={{ padding: 'clamp(40px, 8vw, 80px) 24px', background: 'var(--color-canvas)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <p className="section-label" style={{ marginBottom: '8px', textAlign: 'center' }}>Success Stories</p>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem, 3.5vw, 2.25rem)',
+            fontWeight: 700, color: 'var(--color-text-primary)', textAlign: 'center',
+            margin: '0 auto 48px', letterSpacing: '-0.02em', maxWidth: '500px' }}>
+            What Our Users Say
+          </h2>
+
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', 
+            gap: '24px' 
+          }}>
+            {TESTIMONIALS.map((testimonial, index) => (
+              <div key={index} style={{
+                padding: '28px 24px',
+                background: 'var(--color-surface)',
+                borderRadius: 'var(--radius-xl)',
+                border: '1px solid var(--color-border-subtle)',
+                boxShadow: 'var(--shadow-card)',
+                position: 'relative',
+              }}>
+                {/* Quote icon */}
+                <div style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '20px',
+                  fontSize: '2rem',
+                  color: 'var(--color-terra-muted)',
+                  fontFamily: 'Georgia, serif',
+                  opacity: 0.3,
+                }}>
+                  "
+                </div>
+
+                {/* Rating stars */}
+                <div style={{ marginBottom: '16px' }}>
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <span key={i} style={{ color: '#FFB800', fontSize: '1.1rem', marginRight: '2px' }}>
+                      ★
+                    </span>
+                  ))}
+                </div>
+
+                {/* Testimonial content */}
+                <p style={{ 
+                  color: 'var(--color-text-secondary)', 
+                  lineHeight: 1.7, 
+                  fontSize: '0.95rem', 
+                  margin: '0 0 20px',
+                  fontStyle: 'italic',
+                  position: 'relative',
+                  zIndex: 1,
+                }}>
+                  {testimonial.content}
+                </p>
+
+                {/* Author info */}
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid var(--color-border-subtle)'
+                }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '50%',
+                    background: 'var(--color-terra-muted)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--color-terra)',
+                    fontWeight: 700,
+                    fontSize: '1.1rem',
+                    fontFamily: 'var(--font-display)',
+                  }}>
+                    {testimonial.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div>
+                    <p style={{ 
+                      margin: 0, 
+                      fontWeight: 600, 
+                      color: 'var(--color-text-primary)',
+                      fontSize: '0.95rem'
+                    }}>
+                      {testimonial.name}
+                    </p>
+                    <p style={{ 
+                      margin: 0, 
+                      color: 'var(--color-text-secondary)',
+                      fontSize: '0.85rem'
+                    }}>
+                      {testimonial.role}
+                    </p>
+                    <p style={{ 
+                      margin: 0, 
+                      color: 'var(--color-terra)',
+                      fontSize: '0.8rem',
+                      fontWeight: 500
+                    }}>
+                      {testimonial.location}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
