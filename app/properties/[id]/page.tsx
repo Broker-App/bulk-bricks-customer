@@ -69,7 +69,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             <div style={{ marginBottom: '24px' }}>
               {/* Chips */}
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
-                {property.property_type && <Chip variant="type">{property.property_type.name}</Chip>}
+                {property.property_type && <Chip variant="type">{property.property_type}</Chip>}
                 <Chip variant={property.category === 'residential' ? 'new' : 'featured'}>
                   {categoryLabel}
                 </Chip>
