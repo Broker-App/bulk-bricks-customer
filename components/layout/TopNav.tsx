@@ -32,10 +32,10 @@ export function TopNav() {
       {/* Logo */}
       <Link href="/" style={{
         fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.25rem',
-        color: 'var(--color-terra)', textDecoration: 'none',
+        color: 'var(--color-text-primary)', textDecoration: 'none',
         letterSpacing: '-0.02em', flexShrink: 0,
       }}>
-        Bulk<span style={{ color: 'var(--color-text-primary)' }}>Bricks</span>
+        Bulk<span style={{ color: 'var(--color-terra)' }}>Bricks</span>
       </Link>
 
       {/* Nav links */}

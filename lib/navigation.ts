@@ -1,4 +1,4 @@
-import { Home, Search, Heart, User, Building2, Phone } from 'lucide-react';
+import { Home, Search, Heart, User, Building2, Phone, Info } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavRoute {
@@ -39,6 +39,13 @@ export const NAV_ROUTES: NavRoute[] = [
     shortLabel: 'Saved',
     Icon: Heart,
     bottomNav: true,
+    topNav: true,
+  },
+  {
+    href: '/about',
+    label: 'About Us',
+    Icon: Info,
+    bottomNav: false,
     topNav: true,
   },
   {
