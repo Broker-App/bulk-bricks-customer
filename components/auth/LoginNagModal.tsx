@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
-import { X, LockKeyhole, Sparkles } from 'lucide-react';
+import { X, Gift, Star, ArrowRight, LockKeyhole, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/buttons/Button';
 
 const COOLDOWN_MS   = 25 * 60 * 1000; // 25 minutes
 const TRIGGER_MS    = 12_000;          // 12 seconds idle on a page
@@ -202,23 +204,11 @@ export function LoginNagModal() {
 
           {/* CTA buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <Link
-              href="/auth/login"
-              onClick={() => setShow(false)}
-              className="btn-terra"
-              style={{
-                display:        'flex',
-                alignItems:     'center',
-                justifyContent: 'center',
-                gap:            '8px',
-                padding:        '13px 20px',
-                fontSize:       '0.9375rem',
-                textDecoration: 'none',
-                borderRadius:   '12px',
-              }}
-            >
-              Sign up or Log in
-            </Link>
+            <Button asChild>
+              <Link href="/auth/login" onClick={() => setShow(false)}>
+                Sign In
+              </Link>
+            </Button>
 
             <button
               onClick={handleDismiss}

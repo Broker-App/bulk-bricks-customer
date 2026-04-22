@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Lock, LogIn, MessageCircle } from 'lucide-react';
+import { MessageCircle, Lock, Users, ChevronRight, LogIn } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import type { Property } from '@/types';
+import { Button } from '@/components/ui/buttons/Button';
 
 interface AccessGateProps {
   property: Property;
@@ -37,68 +39,101 @@ export function AccessGate({ property, inline = false }: AccessGateProps) {
   // Don't render anything while checking — avoids layout flash
   if (loading) return null;
 
-  // ── 1. Unlocked — WhatsApp link ────────────────────────────────────────────// 1. Unlocked WhatsApp link
+  // ── 1. Unlocked — WhatsApp link ────────────────────────────────────────────
   if (hasAccess && property.whatsapp_group_link) {
-    return (
+    return inline ? (
+      <Button 
+        asChild
+        variant="whatsapp"
+        style={{ 
+          width: '100%', 
+          fontSize: '0.9375rem', 
+          padding: '16px 42px',
+          border: '2px solid #25D366',
+          animation: 'pulse-border 2s infinite'
+        }}
+      >
+        <a
+          href={property.whatsapp_group_link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: 'none' }}
+        >
+          <MessageCircle size={22} strokeWidth={2} />
+          Join WhatsApp Group
+        </a>
+      </Button>
+    ) : (
       <a
         href={property.whatsapp_group_link}
         target="_blank"
         rel="noopener noreferrer"
-        className={inline ? "btn-whatsapp" : "access-fab access-fab--whatsapp"}
+        className="access-fab access-fab--whatsapp"
         aria-label="Open WhatsApp Group"
-        style={{ 
-          textDecoration: 'none', 
-          width: inline ? '100%' : undefined, 
-          fontSize: inline ? '0.9375rem' : undefined, 
-          padding: inline ? '16px 42px' : undefined,
-          border: inline ? '2px solid #25D366' : undefined,
-          animation: inline ? 'pulse-border 2s infinite' : undefined
-        }}
+        style={{ textDecoration: 'none' }}
       >
         <MessageCircle size={22} strokeWidth={2} />
-        <span className={inline ? "" : "fab-label"}>Join WhatsApp Group</span>
+        <span className="fab-label">Join WhatsApp Group</span>
       </a>
     );
   }
 
   // 2. Guest not logged in
   if (!userId) {
-    return (
-      <Link
-        href={`/auth/login?next=/properties/${property.id}`}
-        className={inline ? "btn-terra" : "access-fab access-fab--terra"}
-        aria-label="Login to Unlock"
+    return inline ? (
+      <Button 
+        asChild
         style={{ 
-          textDecoration: 'none', 
-          width: inline ? '100%' : undefined, 
-          fontSize: inline ? '0.9375rem' : undefined, 
-          padding: inline ? '16px 42px' : undefined,
-          border: inline ? '2px solid var(--color-terra)' : undefined,
-          animation: inline ? 'pulse-border 2s infinite' : undefined
+          width: '100%', 
+          fontSize: '0.9375rem', 
+          padding: '16px 42px',
+          border: '2px solid var(--color-terra)',
+          animation: 'pulse-border 2s infinite'
         }}
       >
+        <Link href={`/auth/login?next=/properties/${property.id}`}>
+          <LogIn size={20} strokeWidth={2} />
+          Login to Unlock
+        </Link>
+      </Button>
+    ) : (
+      <Link
+        href={`/auth/login?next=/properties/${property.id}`}
+        className="access-fab access-fab--terra"
+        aria-label="Login to Unlock"
+        style={{ textDecoration: 'none' }}
+      >
         <LogIn size={20} strokeWidth={2} />
-        <span className={inline ? "" : "fab-label"}>Login to Unlock</span>
+        <span className="fab-label">Login to Unlock</span>
       </Link>
     );
   }
 
   // 3. Locked logged in, not paid
-  return (
-    <button
-      className={inline ? "btn-unlock" : "access-fab access-fab--terra"}
-      aria-label="Unlock Access"
-      onClick={() => alert('Razorpay payment coming soon')}
+  return inline ? (
+    <Button 
+      variant="unlock"
       style={{ 
-        width: inline ? '100%' : undefined, 
-        fontSize: inline ? '0.9375rem' : undefined, 
-        padding: inline ? '16px 42px' : undefined,
-        border: inline ? '2px solid var(--color-terra)' : undefined,
-        animation: inline ? 'pulse-border 2s infinite' : undefined
+        width: '100%', 
+        fontSize: '0.9375rem', 
+        padding: '16px 42px',
+        border: '2px solid var(--color-terra)',
+        animation: 'pulse-border 2s infinite'
       }}
+      onClick={() => alert('Razorpay payment coming soon')}
     >
       <Lock size={20} strokeWidth={2.5} />
-      <span className={inline ? "" : "fab-label"}>Unlock Access</span>
+      Unlock Access
+    </Button>
+  ) : (
+    <button
+      className="access-fab access-fab--terra"
+      aria-label="Unlock Access"
+      onClick={() => alert('Razorpay payment coming soon')}
+      style={{ textDecoration: 'none' }}
+    >
+      <Lock size={20} strokeWidth={2.5} />
+      <span className="fab-label">Unlock Access</span>
     </button>
   );
 }

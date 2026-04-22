@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import {
   Sun, Moon, ChevronRight, Heart, MessageSquare, HelpCircle,
-  Info, LogOut, User, Calendar, Mail, Pencil, Building2
+  Info, LogOut, User, Calendar, Mail, Pencil, Building2, Phone, MapPin, Briefcase
 } from 'lucide-react';
+import { Button } from '@/components/ui/buttons/Button';
 import { useThemeContext } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -135,32 +136,26 @@ export default function ProfilePage() {
 
                   {/* Edit / Sign out */}
                   <div style={{ padding: '16px 20px', display: 'flex', gap: '10px' }}>
-                    <Link
+                    <Button
                       id="profile-edit-btn"
-                      href="/profile/edit"
-                      className="btn-terra"
-                      style={{
-                        flex: 1, padding: '11px', fontSize: '0.875rem',
-                        textDecoration: 'none', textAlign: 'center',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                      }}
+                      asChild
+                      style={{ flex: 1 }}
+                      size="sm"
                     >
-                      <Pencil size={14} strokeWidth={2.5} />
-                      Edit Profile
-                    </Link>
-                    <button
+                      <Link href="/profile/edit">
+                        <Pencil size={14} strokeWidth={2.5} />
+                        Edit Profile
+                      </Link>
+                    </Button>
+                    <Button
                       id="profile-sign-out"
                       onClick={signOut}
-                      className="btn-ghost"
-                      style={{
-                        flex: 1, padding: '11px', fontSize: '0.875rem',
-                        color: 'var(--color-danger)',
-                        borderColor: 'var(--color-danger)',
-                      }}
+                      variant="danger"
+                      size="sm"
                     >
                       <LogOut size={14} strokeWidth={2} />
                       Sign Out
-                    </button>
+                    </Button>
                   </div>
                 </>
 
@@ -187,14 +182,16 @@ export default function ProfilePage() {
                     Sign in to access your saved properties and unlock listings
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <Link href="/auth/login" className="btn-terra"
-                      style={{ padding: '12px', textDecoration: 'none', textAlign: 'center' }}>
-                      Sign In
-                    </Link>
-                    <Link href="/auth/register" className="btn-ghost"
-                      style={{ padding: '12px', textDecoration: 'none', textAlign: 'center' }}>
-                      Create Account
-                    </Link>
+                    <Button asChild>
+                      <Link href="/auth/login">
+                        Sign In
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link href="/auth/register">
+                        Create Account
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               )}

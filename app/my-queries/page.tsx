@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/buttons/Button';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { MessageCircle, ChevronDown, ChevronUp, MapPin, Clock, Inbox } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Chip } from '@/components/ui/Chip';
@@ -80,9 +82,11 @@ export default function MyQueriesPage() {
             <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px', fontSize: '0.875rem', lineHeight: 1.7 }}>
               Track your tickets and builder responses in one place.
             </p>
-            <Link href="/auth/login" className="btn-terra" style={{ padding: '12px 32px', textDecoration: 'none' }}>
-              Sign In
-            </Link>
+            <Button asChild>
+              <Link href="/auth/login">
+                Sign In
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -148,9 +152,11 @@ export default function MyQueriesPage() {
             <p style={{ color: 'var(--color-text-muted)', marginBottom: '28px', fontSize: '0.875rem', lineHeight: 1.7 }}>
               Visit a property listing and raise a ticket if you have any issues or questions.
             </p>
-            <Link href="/properties" className="btn-terra" style={{ padding: '12px 28px', textDecoration: 'none' }}>
-              Browse Properties
-            </Link>
+            <Button asChild>
+              <Link href="/properties">
+                Browse Properties
+              </Link>
+            </Button>
           </div>
         )}
 

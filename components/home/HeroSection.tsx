@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 import { Users, BadgePercent, ArrowUpRight } from 'lucide-react';
 import { SearchBar } from '@/components/search/SearchBar';
 import { CategoryPills } from '../search/CategoryPills';
+import NeoBrutalistButton from '../ui/buttons/NeoBrutalistButton';
 
 /* ─── Feature card ────────────────────────────────────────────── */
 function FeatureCard({
@@ -132,9 +133,15 @@ export function HeroSection() {
             Special group discounts and better pricing.
           </p>
 
-          <Link href="/properties" className="hero-cta-btn">
-            Explore Properties <ArrowUpRight size={16} strokeWidth={2.5} />
-          </Link>
+          <NeoBrutalistButton 
+            asChild
+            variant="primary" 
+            size="large"
+          >
+            <Link href="/properties">
+              Explore Properties <ArrowUpRight size={18} strokeWidth={2.5} />
+            </Link>
+          </NeoBrutalistButton>
         </div>
 
         {/* Right: building photo */}

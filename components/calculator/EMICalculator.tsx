@@ -2,6 +2,8 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Calculator, Home, TrendingUp, IndianRupee, ChevronRight, Zap, Building2, Crown, Trophy, Clock } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/buttons/Button';
 
 /* ─── helpers ─── */
 const fmt = (n: number) => {
@@ -467,10 +469,10 @@ export default function EMICalculator() {
 
             {/* Desktop CTA */}
             {/* <div className="hidden md:block text-center">
-              <button className="btn-terra emi-pulse w-full py-4 text-base font-semibold flex items-center justify-center gap-2">
+              <Button className="emi-pulse" style={{ width: '100%' }}>
                 Get Pre-Approved for This Loan
-                <ChevronRight className="w-5 h-5" />
-              </button>
+                <ChevronRight size={18} />
+              </Button>
               <p className="text-xs text-[var(--color-text-muted)] mt-2">
                 Check your eligibility in 2 minutes · No credit score impact
               </p>
@@ -478,29 +480,29 @@ export default function EMICalculator() {
           </div>
         </div>
 
-        {/* ══════════════════════════════════════════
+          {/* ══════════════════════════════════════════
             MOBILE STICKY BOTTOM CTA
             ══════════════════════════════════════════ */}
-        {/* <div className="md:hidden fixed bottom-0 left-0 right-0 z-30"
-          style={{
-            background: 'var(--color-surface)',
-            borderTop: '1px solid var(--color-border-subtle)',
-            padding: '12px 16px',
-            paddingBottom: 'calc(12px + env(safe-area-inset-bottom))',
-            boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
-          }}>
-          <button className="btn-terra w-full py-4 text-base font-semibold flex items-center justify-center gap-2">
-            Get Pre-Approved
-            <ChevronRight className="w-5 h-5" />
-          </button>
-          <p className="text-center text-xs text-[var(--color-text-muted)] mt-1.5">
-            No credit score impact · 2-minute process
-          </p>
-        </div> */}
+          <div className="md:hidden fixed bottom-0 left-0 right-0 z-30"
+            style={{
+              background: 'var(--color-surface)',
+              borderTop: '1px solid var(--color-border-subtle)',
+              padding: '20px',
+              paddingBottom: 'calc(12px + env(safe-area-inset-bottom))',
+              boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
+            }}>
+            <Button className="w-full py-4" style={{ fontSize: '1rem' }}>
+              Get Pre-Approved
+              <ChevronRight size={18} />
+            </Button>
+            <p className="text-center text-xs text-[var(--color-text-muted)] mt-1.5">
+              No credit score impact · 2-minute process
+            </p>
+          </div>
 
-      </div>
-    </>
-  );
+        </div>
+      </>
+    );
 }
 
 /* ─── SliderCard sub-component ─── */

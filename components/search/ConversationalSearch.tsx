@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
+import { Search, MapPin, Home, Building, ChevronDown } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/buttons/Button';
 import type { Amenity } from '@/types';
 
 /* ─── Budget options (full rupees) ──────────────────────────────── */
@@ -336,32 +337,14 @@ export function ConversationalSearch() {
       </div>
 
       {/* ── Search button ──────────────────────────────────────────── */}
-      <button
+      <Button
         id="cs-search-btn"
         onClick={handleSearch}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          padding: '13px 24px',
-          background: 'var(--color-terra)',
-          color: '#fff',
-          border: 'none',
-          borderRadius: 'var(--radius-pill)',
-          fontFamily: 'var(--font-ui)',
-          fontSize: '0.9375rem',
-          fontWeight: 700,
-          cursor: 'pointer',
-          boxShadow: 'var(--shadow-cta)',
-          transition: 'background 0.15s ease',
-          marginBottom: '18px',
-        }}
+        style={{ marginBottom: '18px' }}
       >
         <Search size={17} strokeWidth={2.5} />
         Search Properties
-      </button>
+      </Button>
 
       {/* ── Popular searches — pre-fill the sentence ───────────────── */}
       <div style={{
@@ -377,25 +360,20 @@ export function ConversationalSearch() {
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {POPULAR.map(p => (
-            <button
+            <Button
               key={p.label}
               onClick={() => applyPreset(p)}
+              variant="outline"
+              size="sm"
               style={{
                 padding: '7px 14px',
-                background: 'var(--color-surface)',
-                border: '1px solid var(--color-border-default)',
-                borderRadius: 'var(--radius-pill)',
                 fontSize: '0.8125rem',
-                color: 'var(--color-text-secondary)',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-ui)',
                 fontWeight: 500,
-                transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap',
               }}
             >
               ↗ {p.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

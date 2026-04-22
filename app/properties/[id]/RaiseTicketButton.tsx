@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { TicketCheck } from 'lucide-react';
+import { MessageCircle, TicketCheck } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/buttons/Button';
 import { RaiseTicketSheet } from '@/components/property/RaiseTicketSheet';
 import type { Property } from '@/types';
 
@@ -9,19 +11,16 @@ export function RaiseTicketButton({ property }: { property: Property }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button
+      <Button
         id="raise-ticket-btn"
         onClick={() => setOpen(true)}
-        className="btn-ghost"
-        style={{
-          width: '100%', padding: '12px', marginBottom: '12px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-          fontSize: '0.875rem',
-        }}
+        variant="unlock"
+        fullWidth
+        style={{ marginBottom: '12px' }}
       >
         <TicketCheck size={15} strokeWidth={2} />
         Report an Issue
-      </button>
+      </Button>
       <RaiseTicketSheet property={property} open={open} onClose={() => setOpen(false)} />
     </>
   );

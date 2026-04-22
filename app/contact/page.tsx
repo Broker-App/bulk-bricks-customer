@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { MessageCircle, CheckCircle } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/buttons/Button';
 import { createClient } from '@/lib/supabase/client';
 
 export default function ContactPage() {

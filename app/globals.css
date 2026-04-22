@@ -906,13 +906,16 @@ body {
   justify-content: space-between;
 }
 
-/* Subtle repeating tile/grid overlay for texture */
+/* Subtle repeating brick pattern overlay for texture */
 .hero-tile-overlay {
   position: absolute;
   inset: 0;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 40px),
-    repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 40px);
+  --s: 36px; /* control the size */
+  --c1: rgba(255,255,255,0.06); /* mortar color - subtle white */
+  --c2: transparent; /* brick color - transparent to show terracotta */
+  --g: conic-gradient(at 90% 40%, #0000 75%, var(--c1) 0);
+  background: var(--g), var(--g) var(--s) var(--s) var(--c2);
+  background-size: calc(2*var(--s)) calc(2*var(--s));
   pointer-events: none;
   z-index: 0;
 }

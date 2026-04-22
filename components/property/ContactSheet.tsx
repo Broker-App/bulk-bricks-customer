@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { MessageCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/buttons/Button';
 import { Input } from '@/components/ui/Input';
 import { createClient } from '@/lib/supabase/client';
 import type { Property } from '@/types';

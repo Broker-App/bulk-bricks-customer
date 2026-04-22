@@ -7,6 +7,7 @@ import { loadMyProperties } from './actions';
 import { PropertyCard } from '@/components/property/PropertyCard';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import type { CustomerAccess } from '@/types';
+import { Button } from '@/components/ui/buttons/Button';
 
 interface Props {
   initialAccesses: CustomerAccess[];
@@ -217,13 +218,11 @@ export function MyPropertiesClient({
                 : 'Browse properties and unlock access to connect directly with builders.'}
             </p>
             {!debouncedQuery && (
-              <Link
-                href="/properties"
-                className="btn-terra"
-                style={{ textDecoration: 'none', padding: '11px 24px', display: 'inline-block' }}
-              >
-                Browse Properties →
-              </Link>
+              <Button asChild>
+                <Link href="/properties">
+                  Browse Properties →
+                </Link>
+              </Button>
             )}
           </div>
         )}

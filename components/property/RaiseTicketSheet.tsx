@@ -5,6 +5,8 @@ import { TicketCheck, CheckCircle, Loader2, AlertCircle, ChevronDown } from 'luc
 import { Modal } from '@/components/ui/Modal';
 import { createClient } from '@/lib/supabase/client';
 import type { Property } from '@/types';
+import { Button } from '@/components/ui/buttons/Button';
+import Link from 'next/link';
 
 interface RaiseTicketSheetProps {
   property: Property;
@@ -109,17 +111,11 @@ export function RaiseTicketSheet({ property, open, onClose }: RaiseTicketSheetPr
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '24px' }}>
             Tickets are tied to your account so the builder can respond directly to you.
           </p>
-          <a
-            href={`/auth/login?next=/properties/${property.id}`}
-            style={{
-              display: 'inline-block',
-              padding: '13px 32px',
-              textDecoration: 'none',
-            }}
-            className="btn-terra"
-          >
-            Sign In
-          </a>
+          <Button asChild>
+            <Link href="/auth/login?next=/properties/${property.id}">
+              Sign In
+            </Link>
+          </Button>
         </div>
       </Modal>
     );
@@ -149,9 +145,9 @@ export function RaiseTicketSheet({ property, open, onClose }: RaiseTicketSheetPr
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8125rem', lineHeight: 1.6, marginBottom: '28px' }}>
             You can track the status under <strong>My Queries</strong>.
           </p>
-          <button onClick={handleClose} className="btn-terra" style={{ padding: '12px 32px', border: 'none' }}>
+          <Button onClick={handleClose} size="md">
             Done
-          </button>
+          </Button>
         </div>
       </Modal>
     );
@@ -252,21 +248,13 @@ export function RaiseTicketSheet({ property, open, onClose }: RaiseTicketSheetPr
         </p>
 
         {/* Submit */}
-        <button
+        <Button
           onClick={handleSubmit}
-          disabled={mode === 'submitting'}
-          className="btn-terra"
-          style={{
-            padding: '13px', width: '100%', border: 'none',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-          }}
+          loading={mode === 'submitting'}
+          style={{ width: '100%' }}
         >
-          {mode === 'submitting' ? (
-            <><Loader2 size={16} strokeWidth={2.5} style={{ animation: 'spin 0.8s linear infinite' }} /> Submitting…</>
-          ) : (
-            <><TicketCheck size={16} strokeWidth={2} /> Submit Ticket</>
-          )}
-        </button>
+          {mode === 'submitting' ? 'Submitting…' : <><TicketCheck size={16} strokeWidth={2} /> Submit Ticket</>}
+        </Button>
       </div>
     </Modal>
   );

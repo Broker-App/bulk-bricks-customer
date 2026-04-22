@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Star, Users, MapPin, ArrowUpDown, Home, IndianRupee, X } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/buttons/Button';
 import { createClient } from '@/lib/supabase/client';
 
 interface FilterSheetProps {

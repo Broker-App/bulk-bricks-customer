@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/buttons/Button';
 import { useRouter } from 'next/navigation';
 import { Phone, Mail, CheckCircle, AlertCircle, Loader2, Pencil } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -294,34 +295,25 @@ export default function EditProfilePage() {
             gridTemplateColumns: '1fr 2fr',
             gap: '12px',
           }}>
-            <button
+            <Button
               type="button"
-              className="btn-ghost"
+              variant="ghost"
               onClick={() => router.back()}
               disabled={saving}
               style={{ padding: '13px 0' }}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               id="edit-profile-save"
               type="submit"
-              className="btn-terra"
               disabled={saving}
               style={{
                 padding: '13px 0',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               }}
             >
-              {saving ? (
-                <>
-                  <Loader2 size={16} strokeWidth={2.5} style={{ animation: 'spin 0.8s linear infinite' }} />
-                  Saving…
-                </>
-              ) : (
-                'Save Changes'
-              )}
-            </button>
+              {saving ? 'Saving…' : 'Save Changes'}
+            </Button>
           </div>
         </form>
       </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, Suspense } from 'react';
+import { Button } from '@/components/ui/buttons/Button';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
@@ -184,22 +185,19 @@ function LoginInner() {
             </div>
 
             {/* Submit */}
-            <button
+            <Button
               id="login-submit"
               type="submit"
               disabled={loading}
-              className="btn-terra"
               style={{
                 width: '100%', padding: '14px',
                 fontSize: '0.9375rem', marginTop: '4px',
-                opacity: loading ? 0.7 : 1,
+                opacity: loading ? 0.7 : 1
               }}
             >
-              {loading
-                ? <span className="spinner" style={{ borderTopColor: '#fff', borderColor: 'rgba(255,255,255,0.3)' }} />
-                : <><LogIn size={16} strokeWidth={2.5} /> Sign In</>
-              }
-            </button>
+              {loading ? 'Signing in…' : 'Sign In'}
+            </Button>
+
           </form>
 
           {/* Footer link */}

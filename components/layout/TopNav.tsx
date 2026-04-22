@@ -6,6 +6,7 @@ import { LogOut } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { TOP_NAV_ROUTES } from '@/lib/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/buttons/Button';
 
 function getInitials(name: string): string {
   return name
@@ -113,10 +114,11 @@ export function TopNav() {
           </div>
         ) : (
           /* ── Logged out ── */
-          <Link href="/auth/login" className="btn-terra"
-            style={{ padding: '8px 20px', fontSize: '0.875rem', textDecoration: 'none' }}>
-            Sign In
-          </Link>
+          <Button asChild size="sm">
+            <Link href="/auth/login">
+              Sign In
+            </Link>
+          </Button>
         )}
       </div>
     </header>

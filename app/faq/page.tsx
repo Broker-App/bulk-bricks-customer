@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/buttons/Button';
+import Link from 'next/link';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 const FAQS = [
@@ -108,10 +110,11 @@ export default function FAQPage() {
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: '16px' }}>
             Our support team is here to help.
           </p>
-          <a href="/contact" className="btn-terra" style={{ display: 'inline-block',
-            padding: '11px 28px', textDecoration: 'none' }}>
-            Contact Support
-          </a>
+          <Button asChild>
+            <Link href="/contact" style={{ display: 'inline-block' }}>
+              Contact Support
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

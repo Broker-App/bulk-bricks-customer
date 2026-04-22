@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { Button } from '@/components/ui/buttons/Button';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, UserPlus, AlertCircle, CheckCircle, Phone } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -106,9 +107,11 @@ export default function RegisterPage() {
             <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.7, fontSize: '0.9rem', margin: '0 0 28px' }}>
               We&apos;ve sent a confirmation link to your email address. Click it to activate your account.
             </p>
-            <Link href="/auth/login" className="btn-terra" style={{ padding: '12px 32px', textDecoration: 'none' }}>
-              Back to Sign In
-            </Link>
+            <Button asChild>
+                <Link href="/auth/login">
+                  Back to Sign In
+                </Link>
+              </Button>
           </div>
         </div>
       </div>
@@ -314,19 +317,17 @@ export default function RegisterPage() {
             </div>
 
             {/* Submit */}
-            <button
+            <Button
               id="register-submit"
               type="submit"
               disabled={loading}
-              className="btn-terra"
+              loading={loading}
               style={{ width: '100%', padding: '14px', fontSize: '0.9375rem', marginTop: '4px',
                 opacity: loading ? 0.7 : 1 }}
             >
-              {loading
-                ? <span className="spinner" style={{ borderTopColor: '#fff', borderColor: 'rgba(255,255,255,0.3)' }} />
-                : <><UserPlus size={16} strokeWidth={2.5} /> Create Account</>
-              }
-            </button>
+              {loading ? 'Creating account...' : 'Create Account'}
+            </Button>
+
           </form>
 
           {/* T&C note */}

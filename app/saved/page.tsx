@@ -7,6 +7,7 @@ import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { fetchSavedProperties } from './actions';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import type { Property } from '@/types';
+import { Button } from '@/components/ui/buttons/Button';
 
 export default function SavedPage() {
   const { wishlist } = useWishlist();
@@ -140,9 +141,11 @@ export default function SavedPage() {
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px', fontSize: '0.9rem' }}>
             Tap the ♡ on any property to save it here
           </p>
-          <Link href="/properties" className="btn-terra" style={{ padding: '12px 28px', textDecoration: 'none' }}>
-            Browse Properties
-          </Link>
+          <Button asChild>
+            <Link href="/properties">
+              Browse Properties
+            </Link>
+          </Button>
         </div>
       ) : (
         <>
