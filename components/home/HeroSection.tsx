@@ -124,12 +124,12 @@ export function HeroSection() {
 
           <h1 className="hero-headline">
             Find Properties.<br />
-            <span className="hero-headline-white">Pay Zero<br />Brokerage.</span>
+            <span className="hero-headline-white">Join Group<br />Buying.</span>
           </h1>
 
           <p className="hero-subtext">
-            Get direct builder access + exclusive group buying discounts.
-            100% broker commission passed back to you.
+            Get direct builder access + exclusive group buying opportunities.
+            Special group discounts and better pricing.
           </p>
 
           <Link href="/properties" className="hero-cta-btn">
@@ -170,9 +170,9 @@ export function HeroSection() {
         />
         <FeatureCard
           icon={BadgePercent}
-          title="100% Broker Commission Passback"
-          highlight="We pass the full commission back to you"
-          desc="Every rupee of broker commission becomes extra savings for you."
+          title="Exclusive Group Discounts"
+          highlight="Better pricing through group buying power"
+          desc="Join exclusive property groups and unlock special discounts not available to individual buyers."
           badge="Limited Time Offer"
         />
       </div>

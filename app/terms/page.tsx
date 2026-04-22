@@ -10,7 +10,7 @@ const SECTIONS = [
   },
   {
     title: '2. Platform Role',
-    content: `Bulk Bricks is a property discovery platform that facilitates direct connections between property buyers and builders. We are not a real estate broker or agent. We do not own, sell, or represent any property listed on the platform.`,
+    content: `Bulk Bricks is a property discovery platform that facilitates direct connections between property buyers and builders through exclusive group buying opportunities. We do not own, sell, or represent any property listed on the platform.`,
   },
   {
     title: '3. Builder Listings',

@@ -2,7 +2,7 @@ import { Search, Unlock, MessageCircle } from 'lucide-react';
 
 export const metadata = {
   title: 'About Us — Bulk Bricks',
-  description: 'Learn how Bulk Bricks connects property buyers directly with verified builders, eliminating brokerage charges.',
+  description: 'Learn how Bulk Bricks connects property buyers directly with verified builders through exclusive group buying opportunities.',
 };
 
 const STEPS = [
@@ -21,7 +21,7 @@ const STEPS = [
   {
     num: '03',
     title: 'Connect Directly',
-    desc: "Join the builder's WhatsApp group and talk directly — no middleman, no brokerage, no recurring fees.",
+    desc: "Join the builder's WhatsApp group and talk directly — exclusive group access, better deals, no hidden fees.",
     Icon: MessageCircle,
   },
 ];
@@ -29,7 +29,7 @@ const STEPS = [
 const STATS = [
   { label: 'Active Properties', value: '500+' },
   { label: 'Verified Builders',  value: '100+' },
-  { label: 'Brokerage Saved',    value: '₹0' },
+  { label: 'Group Discounts',    value: '15%+' },
   { label: 'Happy Customers',    value: '2K+' },
 ];
 
@@ -37,7 +37,7 @@ const TESTIMONIALS = [
   {
     name: 'Rajesh Kumar',
     role: 'Home Buyer, Mumbai',
-    content: 'Bulk Bricks saved me ₹2.5 lakhs in brokerage! I connected directly with the builder and got all my questions answered instantly. No middleman, no hidden charges.',
+    content: 'Bulk Bricks helped me join an exclusive group buying opportunity! I connected directly with the builder and got special group discounts. Better pricing, direct communication.',
     rating: 5,
     location: 'Mumbai, Maharashtra'
   },
@@ -51,7 +51,7 @@ const TESTIMONIALS = [
   {
     name: 'Amit Patel',
     role: 'Property Investor, Ahmedabad',
-    content: 'I\'ve bought 3 properties through Bulk Bricks. The transparency is unmatched. I can talk to builders directly and negotiate better deals without agent interference.',
+    content: 'I\'ve bought 3 properties through Bulk Bricks. The transparency is unmatched. I can talk to builders directly and get better deals through group buying opportunities.',
     rating: 5,
     location: 'Ahmedabad, Gujarat'
   },
@@ -98,8 +98,8 @@ export default function AboutPage() {
           margin: '0 auto 20px',
           maxWidth: '700px',
         }}>
-          Property Discovery Without the{' '}
-          <span style={{ color: 'var(--color-terra)' }}>Brokerage</span>
+          Property Discovery With{' '}
+          <span style={{ color: 'var(--color-terra)' }}>Group Benefits</span>
         </h1>
         <p style={{
           color: 'var(--color-text-secondary)',
@@ -108,8 +108,8 @@ export default function AboutPage() {
           maxWidth: '560px',
           margin: '0 auto',
         }}>
-          Bulk Bricks was built on a simple idea: buyers deserve to talk directly with builders.
-          No agents. No commissions. Just transparent connections.
+          Bulk Bricks was built on a simple idea: buyers deserve better deals through group buying.
+          Direct access. Group benefits. Transparent pricing.
         </p>
       </section>
 
@@ -298,9 +298,9 @@ export default function AboutPage() {
         <div style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
           <p className="section-label" style={{ marginBottom: '10px' }}>Our Mission</p>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.0625rem', lineHeight: 1.8 }}>
-            We believe every property buyer deserves transparency. By cutting out the middleman and
+            We believe every property buyer deserves better deals. By creating exclusive group buying opportunities and
             giving buyers direct access to builder communities, we make real estate more accessible,
-            honest, and affordable for everyone.
+            transparent, and affordable for everyone.
           </p>
         </div>
       </section>

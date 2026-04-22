@@ -7,6 +7,7 @@ import { PropertyGrid } from '@/components/property/PropertyGrid';
 import { WhatsAppButton } from '@/components/home/WhatsAppButton';
 import { HeroSection } from '@/components/home/HeroSection';
 import { ConversationalSearch } from '@/components/search/ConversationalSearch';
+import EMICalculator from '@/components/calculator/EMICalculator';
 import type { Property } from '@/types';
 
 export const metadata = {
@@ -104,7 +105,7 @@ export default async function HomePage() {
           {[
             { step: '01', Icon: Search, title: 'Browse Free', desc: 'Explore verified listings with no account needed.' },
             { step: '02', Icon: Unlock, title: 'Unlock Access', desc: 'Pay once to get the builder’s WhatsApp group link.' },
-            { step: '03', Icon: MessageCircle, title: 'Connect Directly', desc: 'Join the group. Talk to the builder. Zero brokerage.' },
+            { step: '03', Icon: MessageCircle, title: 'Connect Directly', desc: 'Join the group. Talk to the builder. Enjoy group benefits.' },
           ].map(({ step, Icon, title, desc }) => (
             <div key={step} style={{
               padding: '20px', background: 'var(--color-surface-2)',
@@ -132,6 +133,16 @@ export default async function HomePage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ── EMI Calculator ─────────────────────────────────────────────── */}
+      <section style={{ 
+        padding: '48px 16px', 
+        background: 'var(--color-surface)',
+        borderTop: '1px solid var(--color-border-subtle)',
+        borderBottom: '1px solid var(--color-border-subtle)'
+      }}>
+        <EMICalculator />
       </section>
 
       {/* ── Recent Listings ────────────────────────────────────────────── */}

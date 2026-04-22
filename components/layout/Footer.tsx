@@ -45,7 +45,7 @@ export function Footer() {
             Bulk<span style={{ color: 'var(--color-text-primary)' }}>Bricks</span>
           </p>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', lineHeight: 1.6, maxWidth: '320px' }}>
-            Save on brokerage — connect directly with verified builders through WhatsApp groups.
+            Enjoy group benefits — connect directly with verified builders through exclusive WhatsApp groups.
           </p>
         </div>
 
