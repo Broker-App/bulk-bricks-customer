@@ -1013,7 +1013,6 @@ body {
 .hero-building-img {
   display: block;
   width: 100% !important;
-  height: auto !important;
   /* Blend white image background into the terracotta banner */
   mix-blend-mode: multiply;
   animation: hero-illustration-in 0.9s cubic-bezier(0.16,1,0.3,1) forwards;
@@ -1118,7 +1117,6 @@ body {
   .hero-banner {
     flex-direction: row;
     align-items: stretch;
-    min-height: 460px;
     padding: 48px 48px 0;
     border-radius: 0 0 32px 32px;
   }
@@ -1137,8 +1135,7 @@ body {
     position: relative;
     bottom: auto;
     right: auto;
-    width: 500px;
-    max-width: 560px;
+    max-width: 840px;
     flex-shrink: 0;
     align-self: flex-end;
     /* Slightly more aggressive crop on desktop bottom */
