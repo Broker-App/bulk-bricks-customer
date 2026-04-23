@@ -46,7 +46,6 @@ export function HowItWorks() {
           background-position: center 20%, center 20%;
           background-size: contain, contain;
           background-blend-mode: normal, multiply;
-          filter: brightness(0.4) contrast(1.2) sepia(0.3) saturate(0.8);
         }
         
         .howitworks-content {
