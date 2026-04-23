@@ -157,6 +157,9 @@
   --color-img-placeholder: #2E2720;
   --skeleton-base:      #2E2720;
   --skeleton-highlight: #3D3530;
+
+  /* Map iframe dark-mode invert */
+  --map-filter: invert(0.92) hue-rotate(180deg) saturate(0.6) brightness(0.85);
 }
 
 /* ═══════════════════════════════════════════════════════════
