@@ -66,8 +66,8 @@ export function HeroSection() {
               <Button asChild variant="terra" size="lg">
                 <Link href="/properties">Browse Properties →</Link>
               </Button>
-              <Button asChild variant="ghost" size="md">
-                <a href="#how-it-works">See how it works ↓</a>
+              <Button asChild variant="outline" size="md">
+                <a href="#how-it-works">See how it works →</a>
               </Button>
             </div>
           </div>

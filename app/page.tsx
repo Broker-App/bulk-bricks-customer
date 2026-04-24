@@ -9,6 +9,7 @@ import { HeroSection } from '@/components/home/HeroSection';
 import { HowItWorks } from '@/components/home/HowItWorks';
 import { ConversationalSearch } from '@/components/search/ConversationalSearch';
 import EMICalculator from '@/components/calculator/EMICalculator';
+import { VideoExplainer } from '@/components/home/VideoExplainer';
 import type { Property } from '@/types';
 
 export const metadata = {
@@ -64,6 +65,9 @@ export default async function HomePage() {
       
       {/* ── How It Works ────────────────────────────────────────── */}
       <HowItWorks />
+
+      {/* ── Video Explainer ─────────────────────────────────────── */}
+      <VideoExplainer />
 
       {/* ── EMI Calculator ─────────────────────────────────────────────── */}
       <section style={{ 

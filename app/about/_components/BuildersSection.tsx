@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/buttons/Button';
 const TIMELINE = [
   { label: 'RERA Registration', detail: 'Active registration number cross-checked with state authority records.' },
   { label: 'Legal Document Review', detail: 'Title deeds, encumbrance certificates, and ownership chain verified.' },
-  { label: 'Physical Site Inspection', detail: 'Our team visits each site before listing to confirm construction status.' },
+  { label: 'Construction Status Review', detail: 'Current construction stage and project progress confirmed before listing.' },
   { label: 'Approval Status Confirmed', detail: 'Building plan approvals, NOCs, and environmental clearances reviewed.' },
 ];
 
@@ -43,8 +43,9 @@ export function BuildersSection() {
               color: 'var(--color-text-secondary)', lineHeight: 1.85,
               fontSize: '1rem', margin: '0 0 48px',
             }}>
-              We don&apos;t list every builder who signs up. Our team reviews legal documents,
-              RERA registrations, and conducts physical site inspections before a single property goes live.
+              We review RERA registrations, legal documentation, and project
+              approval status for each builder before their properties are listed
+              on the platform. Only builders who pass our review go live.
             </p>
           </MotionFade>
 
@@ -83,7 +84,7 @@ export function BuildersSection() {
           </div>
 
           <MotionFade delay={0.5}>
-            <Button asChild variant="ghost" size="sm">
+            <Button asChild variant="outline" size="sm">
               <Link href="/builders">Meet Our Verified Builders →</Link>
             </Button>
           </MotionFade>

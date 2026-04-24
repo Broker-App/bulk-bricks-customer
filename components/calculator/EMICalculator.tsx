@@ -483,7 +483,7 @@ export default function EMICalculator() {
           {/* ══════════════════════════════════════════
             MOBILE STICKY BOTTOM CTA
             ══════════════════════════════════════════ */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-30"
+          {/* <div className="md:hidden fixed bottom-0 left-0 right-0 z-30"
             style={{
               background: 'var(--color-surface)',
               borderTop: '1px solid var(--color-border-subtle)',
@@ -498,7 +498,7 @@ export default function EMICalculator() {
             <p className="text-center text-xs text-[var(--color-text-muted)] mt-1.5">
               No credit score impact · 2-minute process
             </p>
-          </div>
+          </div> */}
 
         </div>
       </>

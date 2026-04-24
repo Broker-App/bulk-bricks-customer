@@ -224,7 +224,7 @@ export function HeroSection() {
     <div className="hero-root">
 
       {/* ── Main terracotta banner ─────────────────────────────── */}
-      <section className="hero-banner">
+      <div className="hero-banner">
         {/* Subtle tile texture overlay */}
         <div className="hero-tile-overlay" aria-hidden="true" />
 
@@ -264,7 +264,7 @@ export function HeroSection() {
             className="hero-building-img"
           />
         </div>
-      </section>
+      </div>
 
       {/* ── Search bar — sits below the banner on the canvas ─── */}
       <div className="hero-search-outer">
