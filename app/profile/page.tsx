@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {
   Sun, Moon, ChevronRight, Heart, MessageSquare, HelpCircle,
-  Info, LogOut, User, Calendar, Mail, Pencil, Building2, Phone, MapPin, Briefcase
+  Info, LogOut, User, Calendar, Mail, Pencil, Building2, Users, ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/buttons/Button';
 import { useThemeContext } from '@/contexts/ThemeContext';
@@ -271,6 +271,97 @@ export default function ProfilePage() {
                   <ChevronRight size={16} color="var(--color-text-muted)" style={{ flexShrink: 0 }} />
                 </Link>
               ))}
+            </div>
+
+            {/* ── Corporate CTA Card ──────────────────────────────── */}
+            <div style={{
+              background: 'linear-gradient(135deg, #1A0F0A 0%, #3D1A0E 50%, var(--color-terra-hover) 100%)',
+              borderRadius: 'var(--radius-xl)',
+              border: '1px solid var(--color-terra-border)',
+              padding: '24px',
+              boxShadow: 'var(--shadow-cta)',
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* Decorative orb */}
+              <span aria-hidden style={{
+                position: 'absolute', top: '-40px', right: '-40px',
+                width: '160px', height: '160px', borderRadius: '50%',
+                background: 'rgba(193,68,14,0.25)', pointerEvents: 'none', filter: 'blur(32px)',
+              }} />
+
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                {/* Icon + badge row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+                  <div style={{
+                    width: '44px', height: '44px', borderRadius: 'var(--radius-lg)',
+                    background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}>
+                    <Users size={20} color="#FFFFFF" />
+                  </div>
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center',
+                    padding: '3px 10px', borderRadius: 'var(--radius-pill)',
+                    background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)',
+                    fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em',
+                    textTransform: 'uppercase', color: 'rgba(255,255,255,0.85)',
+                  }}>
+                    Corporate &amp; Bulk
+                  </span>
+                </div>
+
+                <p style={{
+                  fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 800,
+                  color: '#FFFFFF', margin: '0 0 8px', letterSpacing: '-0.02em', lineHeight: 1.2,
+                }}>
+                  Buying 10+ units?
+                </p>
+                <p style={{
+                  fontSize: '0.8125rem', color: 'rgba(255,255,255,0.65)',
+                  lineHeight: 1.6, margin: '0 0 16px',
+                }}>
+                  Get developer-direct bulk pricing, a dedicated relationship manager, and custom payment structures — not available to individual buyers.
+                </p>
+
+                {/* Bullet perks */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '7px', marginBottom: '20px' }}>
+                  {[
+                    '10–20% below market rate',
+                    'Dedicated relationship manager',
+                    'Group site visits & legal support',
+                  ].map(perk => (
+                    <div key={perk} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        width: '16px', height: '16px', borderRadius: '50%',
+                        background: 'rgba(255,255,255,0.15)', display: 'flex',
+                        alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                      }}>
+                        <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                          <path d="M1 3L3 5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                      <span style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>
+                        {perk}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <Button
+                  asChild
+                  style={{
+                    background: '#FFFFFF',
+                    color: 'var(--color-terra)',
+                    borderColor: 'rgba(255,255,255,0.5)',
+                    boxShadow: '4px 4px 0px rgba(255,255,255,0.25)',
+                  }}
+                >
+                  <Link href="/corporate">
+                    Submit Bulk Requirement <ArrowRight size={14} />
+                  </Link>
+                </Button>
+              </div>
             </div>
 
             {/* App info card */}

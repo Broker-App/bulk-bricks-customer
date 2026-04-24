@@ -64,6 +64,11 @@ export function TopNav() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
         <ThemeToggle />
 
+        {/* Corporate CTA — separated from main nav links */}
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/corporate">Corporate</Link>
+        </Button>
+
         {loading ? (
           /* Skeleton while session resolves */
           <div className="skeleton" style={{ width: '36px', height: '36px', borderRadius: '50%' }} />

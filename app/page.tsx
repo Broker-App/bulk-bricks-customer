@@ -10,6 +10,7 @@ import { HowItWorks } from '@/components/home/HowItWorks';
 import { ConversationalSearch } from '@/components/search/ConversationalSearch';
 import EMICalculator from '@/components/calculator/EMICalculator';
 import { VideoExplainer } from '@/components/home/VideoExplainer';
+import { PartnersStrip } from '@/components/home/PartnersStrip';
 import type { Property } from '@/types';
 
 export const metadata = {
@@ -68,6 +69,9 @@ export default async function HomePage() {
 
       {/* ── Video Explainer ─────────────────────────────────────── */}
       <VideoExplainer />
+
+      {/* ── Partners ─────────────────────────────────────────────── */}
+      <PartnersStrip />
 
       {/* ── EMI Calculator ─────────────────────────────────────────────── */}
       <section style={{ 
