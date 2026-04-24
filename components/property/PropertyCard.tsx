@@ -64,7 +64,7 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   style={{
-                    objectFit: 'cover',
+                    objectFit: 'contain',
                     transition: 'transform 1s ease'
                   }}
                   className="hover:scale-105 transition-transform duration-1000"
