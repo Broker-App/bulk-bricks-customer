@@ -134,6 +134,8 @@ export function PropertiesInfiniteScrollClient({
             }}>
               <SkeletonCard />
               <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
             </div>
           )}
           

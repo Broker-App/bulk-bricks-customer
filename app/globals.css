@@ -1163,3 +1163,23 @@ body {
   }
 }
 
+/* Responsive Featured Grid */
+@media (min-width: 768px) {
+  .featured-scroll {
+    grid-auto-flow: row !important;
+    grid-auto-columns: unset !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    overflow-x: unset !important;
+  }
+}
+
+/* Responsive Recent Grid */
+@media (min-width: 768px) {
+  .recent-scroll {
+    grid-auto-flow: row !important;
+    grid-auto-columns: unset !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    overflow-x: unset !important;
+  }
+}
+

@@ -1,12 +1,13 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import type { Property } from '@/types';
 
 const WISHLIST_KEY = 'bb-wishlist';
 
 interface WishlistContextValue {
-  wishlist: string[];
-  toggle: (propertyId: string) => void;
+  wishlist: Property[];
+  toggle: (property: Property) => void;
   isWishlisted: (propertyId: string) => boolean;
 }
 
@@ -17,7 +18,7 @@ const WishlistContext = createContext<WishlistContextValue>({
 });
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [wishlist, setWishlist] = useState<Property[]>([]);
 
   useEffect(() => {
     try {
@@ -26,18 +27,18 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
-  const toggle = useCallback((propertyId: string) => {
+  const toggle = useCallback((property: Property) => {
     setWishlist(prev => {
-      const next = prev.includes(propertyId)
-        ? prev.filter(id => id !== propertyId)
-        : [...prev, propertyId];
+      const next = prev.some(p => p.id === property.id)
+        ? prev.filter(p => p.id !== property.id)
+        : [...prev, property];
       try { localStorage.setItem(WISHLIST_KEY, JSON.stringify(next)); } catch {}
       return next;
     });
   }, []);
 
   const isWishlisted = useCallback(
-    (propertyId: string) => wishlist.includes(propertyId),
+    (propertyId: string) => wishlist.some(p => p.id === propertyId),
     [wishlist]
   );
 

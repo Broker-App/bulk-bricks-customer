@@ -4,98 +4,34 @@ import Link from 'next/link';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { PropertyGrid } from '@/components/property/PropertyGrid';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
-import { fetchSavedProperties } from './actions';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import type { Property } from '@/types';
 import { Button } from '@/components/ui/buttons/Button';
 
 export default function SavedPage() {
   const { wishlist } = useWishlist();
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [batchIndex, setBatchIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(wishlist.length > 0);
+  const [displayedCount, setDisplayedCount] = useState(8);
+  const [isLoading, setIsLoading] = useState(false);
   
-  const observerRef = useRef<IntersectionObserver>();
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  
-  // Initial load when wishlist becomes available
-  useEffect(() => {
-    if (wishlist.length === 0) {
-      setIsLoading(false);
-      setHasMore(false);
-      return;
-    }
-    
-    const loadInitialBatch = async () => {
-      setIsLoading(true);
-      try {
-        const firstBatch = wishlist.slice(0, 10);
-        const { data } = await fetchSavedProperties(firstBatch);
-        setProperties((data ?? []) as unknown as Property[]);
-        setBatchIndex(1);
-        setHasMore(10 < wishlist.length);
-      } catch (error) {
-        console.error('Failed to load saved properties:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    loadInitialBatch();
-  }, [wishlist]);
-  
-  // Reset when wishlist changes (user adds/removes items)
-  useEffect(() => {
-    setProperties([]);
-    setBatchIndex(0);
-    setHasMore(wishlist.length > 0);
-  }, [wishlist]);
-  
-  // Load more properties (infinite scroll)
-  const loadMore = useCallback(async () => {
-    if (!hasMore || isLoading) return;
-    
-    const nextIds = wishlist.slice(batchIndex * 10, (batchIndex + 1) * 10);
-    if (nextIds.length === 0) {
-      setHasMore(false);
-      return;
-    }
+  // Load more properties when user clicks button
+  const loadMore = useCallback(() => {
+    if (displayedCount >= wishlist.length) return;
     
     setIsLoading(true);
-    try {
-      const { data } = await fetchSavedProperties(nextIds);
-      setProperties(prev => [...prev, ...(data ?? []) as unknown as Property[]]);
-      setBatchIndex(prev => prev + 1);
-      setHasMore((batchIndex + 1) * 10 < wishlist.length);
-    } catch (error) {
-      console.error('Failed to load more saved properties:', error);
-    } finally {
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      setDisplayedCount(prev => Math.min(prev + 8, wishlist.length));
       setIsLoading(false);
-    }
-  }, [batchIndex, wishlist, hasMore, isLoading]);
+    }, 300);
+  }, [wishlist, displayedCount]);
   
-  // Intersection Observer for infinite scroll
+  // Reset displayed count when wishlist changes
   useEffect(() => {
-    if (!sentinelRef.current) return;
-    
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    
-    observerRef.current.observe(sentinelRef.current);
-    
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [loadMore, hasMore, isLoading]);
+    setDisplayedCount(Math.min(8, wishlist.length));
+  }, [wishlist]);
+  
+  // Get the properties to display
+  const displayedProperties = wishlist.slice(0, displayedCount);
 
   return (
     <div style={{ padding: '24px 16px 40px', background: 'var(--color-canvas)', minHeight: '100dvh' }}>
@@ -117,7 +53,7 @@ export default function SavedPage() {
           gap: '8px',
         }}>
           {wishlist.length} saved properties
-          {!hasMore && wishlist.length > 10 && (
+          {displayedCount >= wishlist.length && wishlist.length > 8 && (
             <span style={{
               background: 'var(--color-success-bg)',
               color: 'var(--color-success)',
@@ -149,28 +85,19 @@ export default function SavedPage() {
         </div>
       ) : (
         <>
-          <PropertyGrid properties={properties} loading={false} />
+          <PropertyGrid properties={displayedProperties} loading={false} />
           
-          {/* Loading skeletons */}
-          {isLoading && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-              gap: '20px',
-              marginTop: '20px',
-            }}>
-              <SkeletonCard />
-              <SkeletonCard />
+          {/* Load more button */}
+          {displayedCount < wishlist.length && (
+            <div style={{ textAlign: 'center', marginTop: '32px' }}>
+              <Button 
+                onClick={loadMore}
+                disabled={isLoading}
+                style={{ minWidth: '160px' }}
+              >
+                {isLoading ? 'Loading...' : 'Load More'}
+              </Button>
             </div>
-          )}
-          
-          {/* Intersection Observer sentinel */}
-          {hasMore && (
-            <div 
-              ref={sentinelRef} 
-              style={{ height: '20px', width: '100%' }}
-              aria-label="Load more saved properties"
-            />
           )}
         </>
       )}

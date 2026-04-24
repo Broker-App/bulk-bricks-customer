@@ -43,7 +43,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     sortBy:         sp.sortBy as PropertyFilters['sortBy'],
     amenityIds:     sp.amenities ? sp.amenities.split(',').filter(Boolean) : undefined,
     page:           0, // Always page 0 for SSR
-    pageSize:       10,
+    pageSize:       8,
   };
 
   const { data, count } = await fetchProperties(filters);

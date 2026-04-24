@@ -20,51 +20,43 @@ const BUDGET_OPTIONS = [
 const POPULAR: { label: string; state: Partial<SearchState> }[] = [
   {
     label: 'Residential in Mumbai',
-    state: { category: 'residential', typeId: '', city: 'Mumbai', area: '', budgetIndex: 0, groupBuy: 'no' },
+    state: { category: 'residential', typeId: '', city: 'Mumbai', area: '', budgetIndex: 0 },
   },
   {
     label: 'Commercial Properties',
-    state: { category: 'commercial', typeId: '', city: '', area: '', budgetIndex: 0, groupBuy: 'no' },
-  },
-  {
-    label: 'Group Buy Deals',
-    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 0, groupBuy: 'yes' },
+    state: { category: 'commercial', typeId: '', city: '', area: '', budgetIndex: 0 },
   },
   {
     label: 'Budget Under ₹50L',
-    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 1, groupBuy: 'no' },
+    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 1 },
   },
   {
     label: 'Luxury Homes ₹2Cr+',
-    state: { category: 'residential', typeId: '', city: '', area: '', budgetIndex: 3, groupBuy: 'no' },
+    state: { category: 'residential', typeId: '', city: '', area: '', budgetIndex: 3 },
   },
   {
     label: 'Bangalore Apartments',
-    state: { category: 'residential', typeId: 'Apartment', city: 'Bangalore', area: '', budgetIndex: 0, groupBuy: 'no' },
+    state: { category: 'residential', typeId: 'Apartment', city: 'Bangalore', area: '', budgetIndex: 0 },
   },
   {
     label: 'Delhi Commercial',
-    state: { category: 'commercial', typeId: '', city: 'Delhi', area: '', budgetIndex: 0, groupBuy: 'no' },
+    state: { category: 'commercial', typeId: '', city: 'Delhi', area: '', budgetIndex: 0 },
   },
   {
     label: 'Pune Villas',
-    state: { category: 'residential', typeId: 'Villa', city: 'Pune', area: '', budgetIndex: 2, groupBuy: 'no' },
+    state: { category: 'residential', typeId: 'Villa', city: 'Pune', area: '', budgetIndex: 2 },
   },
   {
     label: 'With Parking',
-    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 0, amenityId: '1', groupBuy: 'no' },
+    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 0, amenityId: '1' },
   },
   {
     label: 'Gym & Pool',
-    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 0, amenityId: '2', groupBuy: 'no' },
-  },
-  {
-    label: 'Hyderabad Group Buy',
-    state: { category: 'residential', typeId: '', city: 'Hyderabad', area: '', budgetIndex: 1, groupBuy: 'yes' },
+    state: { category: '', typeId: '', city: '', area: '', budgetIndex: 0, amenityId: '2' },
   },
   {
     label: 'Chennai Under ₹1Cr',
-    state: { category: '', typeId: '', city: 'Chennai', area: '', budgetIndex: 2, groupBuy: 'no' },
+    state: { category: '', typeId: '', city: 'Chennai', area: '', budgetIndex: 2 },
   },
 ];
 
@@ -75,7 +67,6 @@ interface SearchState {
   area: string;
   budgetIndex: number;
   amenityId: string;
-  groupBuy: string;
 }
 
 /* ─── Styled inline select ───────────────────────────────────────── */
@@ -149,8 +140,7 @@ export function ConversationalSearch() {
   const [area,        setArea]        = useState('');
   const [budgetIndex, setBudgetIndex] = useState(0);
   const [amenityId,   setAmenityId]   = useState('');
-  const [groupBuy,    setGroupBuy]    = useState('no');
-
+  
   /* Fetch cities + amenities on mount */
   useEffect(() => {
     const sb = createClient();
@@ -215,7 +205,7 @@ export function ConversationalSearch() {
     if (preset.state.city        !== undefined) { setCity(preset.state.city); setArea(''); }
     if (preset.state.area        !== undefined) setArea(preset.state.area);
     if (preset.state.budgetIndex !== undefined) setBudgetIndex(preset.state.budgetIndex);
-    if (preset.state.groupBuy    !== undefined) setGroupBuy(preset.state.groupBuy);
+    if (preset.state.amenityId   !== undefined) setAmenityId(preset.state.amenityId);
   };
 
   /* Build URL and navigate */
@@ -229,7 +219,6 @@ export function ConversationalSearch() {
     if (budget.min)      params.set('minPrice', budget.min);
     if (budget.max)      params.set('maxPrice', budget.max);
     if (amenityId)       params.set('amenities', amenityId);
-    if (groupBuy === 'yes') params.set('group', 'true');
     router.push(`/properties?${params.toString()}`);
   };
 
@@ -328,13 +317,7 @@ export function ConversationalSearch() {
           </>
         )}
 
-        <Word>and is</Word>
-
-        <InlineDrop id="cs-group" value={groupBuy} onChange={setGroupBuy}>
-          <option value="no">a single buy property</option>
-          <option value="yes">a group buy deal</option>
-        </InlineDrop>
-      </div>
+              </div>
 
       {/* ── Search button ──────────────────────────────────────────── */}
       <Button

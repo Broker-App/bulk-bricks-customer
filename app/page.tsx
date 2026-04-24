@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { Users } from 'lucide-react';
 import { fetchProperties } from '@/lib/queries/properties';
-import { PropertyCarousel } from '@/components/property/PropertyCarousel';
 import { PropertyGrid } from '@/components/property/PropertyGrid';
+import { FeaturedGrid } from '@/components/property/FeaturedGrid';
+import { RecentGrid } from '@/components/property/RecentGrid';
 import { WhatsAppButton } from '@/components/home/WhatsAppButton';
 import { HeroSection } from '@/components/home/HeroSection';
 import { HowItWorks } from '@/components/home/HowItWorks';
@@ -17,15 +17,13 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const [featuredRes, groupRes, recentRes] = await Promise.all([
-    fetchProperties({ isFeatured: true, pageSize: 5 }),
-    fetchProperties({ isGroupEnabled: true, pageSize: 5 }),
-    fetchProperties({ pageSize: 5 }),
+  const [featuredRes, recentRes] = await Promise.all([
+    fetchProperties({ isFeatured: true, pageSize: 4 }),
+    fetchProperties({ pageSize: 6 }),
   ]);
 
   const featured = ((featuredRes.data ?? []) as unknown as Property[]).slice(0, 5);
-  const groupBuy = (((groupRes.data ?? []) as unknown as Property[]).filter(p => !p.is_featured)).slice(0, 5);
-  const recent = ((recentRes.data ?? []) as unknown as Property[]).slice(0, 5);
+  const recent = ((recentRes.data ?? []) as unknown as Property[]).slice(0, 8);
 
   return (
     <div style={{ background: 'var(--color-canvas)', minHeight: '100dvh' }}>
@@ -59,37 +57,11 @@ export default async function HomePage() {
               View all →
             </Link>
           </div>
-          <PropertyCarousel properties={featured} />
+          <FeaturedGrid properties={featured} />
         </section>
       )}
 
-      {/* ── Group Buy ──────────────────────────────────────────────────── */}
-      {groupBuy.length > 0 && (
-        <section style={{ paddingBottom: '8px' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '20px 16px 12px'
-          }}>
-            <div>
-              <p className="section-label" style={{ marginBottom: '2px' }}>Better Together</p>
-              <h2 style={{
-                fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700,
-                color: 'var(--color-text-primary)', margin: 0,
-                display: 'flex', alignItems: 'center', gap: '8px'
-              }}>
-                <Users size={18} color="var(--color-terra)" strokeWidth={2.5} />
-                Group Buy Deals
-              </h2>
-            </div>
-            <Link href="/properties?group=true"
-              style={{ fontSize: '0.875rem', color: 'var(--color-terra)', fontWeight: 600, textDecoration: 'none' }}>
-              View all →
-            </Link>
-          </div>
-          <PropertyCarousel properties={groupBuy} />
-        </section>
-      )}
-
+      
       {/* ── How It Works ────────────────────────────────────────── */}
       <HowItWorks />
 
@@ -120,7 +92,7 @@ export default async function HomePage() {
             View all →
           </Link>
         </div>
-        <PropertyGrid properties={recent} />
+        <RecentGrid properties={recent} />
       </section>
 
       {/* ── WhatsApp Button ─────────────────────────────────────────────────── */}

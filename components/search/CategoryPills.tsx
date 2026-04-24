@@ -1,22 +1,20 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Star, Users, type LucideIcon } from 'lucide-react';
+import { Star, type LucideIcon } from 'lucide-react';
 
 const PILLS: { label: string; value: string; Icon?: LucideIcon }[] = [
   { label: 'All',        value: '' },
   { label: 'Residential', value: 'residential' },
   { label: 'Commercial',  value: 'commercial' },
   { label: 'Featured',   value: 'featured', Icon: Star },
-  { label: 'Group Buy',  value: 'group',    Icon: Users },
 ];
 
 export function CategoryPills() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const current = searchParams.get('category') ?? (
-    searchParams.get('featured') === 'true' ? 'featured' :
-    searchParams.get('group') === 'true'    ? 'group'    : ''
+    searchParams.get('featured') === 'true' ? 'featured' : ''
   );
 
   const handleClick = (value: string) => {
@@ -25,8 +23,6 @@ export function CategoryPills() {
     if (q) params.set('search', q);
     if (value === 'featured') {
       params.set('featured', 'true');
-    } else if (value === 'group') {
-      params.set('group', 'true');
     } else if (value) {
       params.set('category', value);
     }

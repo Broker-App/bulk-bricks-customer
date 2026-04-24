@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart, MapPin, Users, Star, Images, TrendingDown } from 'lucide-react';
+import { Heart, Users, Star, Images, TrendingDown, MapPinned } from 'lucide-react';
 import { SlotBar } from '@/components/ui/SlotBar';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { formatINR } from '@/utils/format';
@@ -19,10 +19,10 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
 
   const coverImage = property.images?.find((img) => img.is_cover) ?? property.images?.[0];
   const imageCount = property.images?.length ?? 0;
-  const builder    = property.builder;
+  const builder = property.builder;
 
   const isGroupEnabled = property.is_group_enabled && property.group_size != null;
-  const isFull  = isGroupEnabled && property.slots_filled >= property.group_size!;
+  const isFull = isGroupEnabled && property.slots_filled >= property.group_size!;
   const slotsLeft = isGroupEnabled ? property.group_size! - property.slots_filled : 0;
 
   const location = property.location_area
@@ -33,27 +33,50 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
   const subtitleParts = [categoryLabel, location].filter(Boolean);
 
   return (
-    <div className="pwa-card" style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+    <div className="pwa-card" style={{
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+      borderRadius: 'var(--radius-xl)',
+      overflow: 'hidden',
+      transform: 'scale(1.02)',
+      transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+    }}>
 
       {/* ── Image ──────────────────────────────────────────────────── */}
       <div style={{ position: 'relative' }}>
         <Link href={`/properties/${property.id}`} style={{ display: 'block', textDecoration: 'none' }}>
           <div style={{
             width: '100%',
-            aspectRatio: compact ? '16/9' : '16/9',
+            aspectRatio: compact ? '4/3' : '3/2',
             background: 'var(--color-img-placeholder)',
             position: 'relative',
             overflow: 'hidden',
-            borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
+            borderRadius: 'var(--radius-xl) var(--radius-xl) 0 0',
+            minHeight: '280px'
           }}>
             {coverImage ? (
-              <Image
-                src={coverImage.url}
-                alt={coverImage.alt_text ?? property.title}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                style={{ objectFit: 'cover' }}
-              />
+              <>
+                <Image
+                  src={coverImage.url}
+                  alt={coverImage.alt_text ?? property.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  style={{
+                    objectFit: 'cover',
+                    transition: 'transform 1s ease'
+                  }}
+                  className="hover:scale-105 transition-transform duration-1000"
+                />
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7) 100%)',
+                  pointerEvents: 'none',
+                  opacity: '0.8'
+                }} />
+              </>
             ) : (
               <div style={{
                 width: '100%', height: '100%', display: 'flex',
@@ -65,13 +88,6 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
                 No Image
               </div>
             )}
-
-            {/* Gradient scrim at bottom for legibility */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%)',
-              pointerEvents: 'none',
-            }} />
           </div>
         </Link>
 
@@ -79,17 +95,19 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
         {/* ── Bottom-right: image count pill ── */}
         {imageCount > 0 && (
           <div style={{
-            position: 'absolute', bottom: '10px', right: '10px',
-            display: 'flex', alignItems: 'center', gap: '4px',
-            background: 'rgba(0,0,0,0.52)',
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
+            position: 'absolute', bottom: '15px', right: '15px',
+            display: 'flex', alignItems: 'center', gap: '6px',
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
             borderRadius: '99px',
-            padding: '4px 10px',
+            padding: '6px 14px',
             pointerEvents: 'none',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+            border: '1px solid rgba(255,255,255,0.1)'
           }}>
-            <Images size={11} color="#FFFFFF" strokeWidth={2} />
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#FFFFFF', lineHeight: 1 }}>
+            <Images size={14} color="#FFFFFF" strokeWidth={2} />
+            <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#FFFFFF', lineHeight: 1 }}>
               {imageCount}
             </span>
           </div>
@@ -100,7 +118,7 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
           <div style={{
             position: 'absolute', top: '10px', left: '10px',
             display: 'flex', alignItems: 'center', gap: '5px',
-            background: 'rgba(255,255,255,0.96)',
+            background: 'var(--color-surface)',
             borderRadius: '99px',
             padding: '4px 10px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
@@ -123,16 +141,31 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
         {/* ── Sold badge ── */}
         {property.status === 'sold' && (
           <div style={{
-            position: 'absolute', top: '10px', left: '10px',
-            display: 'flex', alignItems: 'center', gap: '5px',
-            background: 'rgba(255,255,255,0.96)',
+            position: 'absolute', top: '15px', left: '15px',
+            display: 'flex', alignItems: 'center', gap: '6px',
+            background: 'rgba(255,255,255,0.95)',
             borderRadius: '99px',
-            padding: '4px 10px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+            padding: '6px 14px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
             pointerEvents: 'none',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
           }}>
-            <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--color-text-muted)' }} />
-            <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', lineHeight: 1 }}>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: 'var(--color-text-muted)',
+              boxShadow: '0 0 8px rgba(107,114,128,0.5)'
+            }} />
+            <span style={{
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              color: 'var(--color-text-muted)',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              lineHeight: 1
+            }}>
               Sold
             </span>
           </div>
@@ -141,13 +174,35 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
         {/* ── Favourite button ── */}
         <button
           className={`btn-favorite${wishlisted ? ' active' : ''}`}
-          onClick={() => toggle(property.id)}
+          onClick={() => toggle(property)}
           aria-label={wishlisted ? 'Remove from saved' : 'Save property'}
-          style={{ position: 'absolute', top: '10px', right: '10px' }}
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.15)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
         >
           <Heart
-            size={16}
-            strokeWidth={2}
+            size={14}
+            strokeWidth={2.5}
             fill={wishlisted ? 'var(--color-danger)' : 'none'}
             color={wishlisted ? 'var(--color-danger)' : 'var(--color-text-secondary)'}
           />
@@ -156,71 +211,80 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
 
       {/* ── Card body ──────────────────────────────────────────────── */}
       <Link href={`/properties/${property.id}`} style={{ textDecoration: 'none' }}>
-        <div style={{ padding: '14px 14px 0' }}>
+        <div style={{ padding: '18px 20px 0' }}>
 
-          {/* Title and Map Pin */}
+          {/* Title + Subtitle and Map Pin */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <h3 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '1rem',
-              fontWeight: 700,
-              color: 'var(--color-text-primary)',
-              margin: 0,
-              lineHeight: 1.3,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              flex: 1,
-            }}>
-              {property.title}
-            </h3>
-            
+            <div>
+              <h3 style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: '1.125rem',
+                fontWeight: 800,
+                color: 'var(--color-text-primary)',
+                margin: 0,
+                lineHeight: 1.4,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                flex: 1,
+                letterSpacing: '-0.01em'
+              }}>
+                {property.title}
+              </h3>
+
+              {/* Subtitle: Category · Location */}
+              <p style={{
+                fontSize: '0.875rem',
+                color: 'var(--color-text-muted)',
+                margin: '0 0 14px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                fontWeight: 500
+              }}>
+                {subtitleParts.join(' · ')}
+              </p>
+
+            </div>
+
             {/* Map Pin Button */}
             <button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 // Use the same logic as property details page
                 const mapUrl = property.google_maps_url
                   ?? (property.location_lat && property.location_lng
                     ? `https://www.google.com/maps?q=${property.location_lat},${property.location_lng}`
                     : null);
-                
+
                 if (mapUrl) {
                   window.open(mapUrl, '_blank', 'noopener,noreferrer');
                 }
               }}
               style={{
                 cursor: 'pointer',
-                transition: 'all 0.2s ease',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px solid transparent',
+                flexShrink: 0,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.borderColor = 'var(--color-terra)';
+                e.currentTarget.style.transform = 'scale(1.15)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.borderColor = 'var(--color-border-subtle)';
               }}
               title={`View ${property.location_city} on Google Maps`}
             >
-              <MapPin size={24} color="var(--color-terra)" strokeWidth={2} />
+
+              <MapPinned size={34} color="var(--color-terra)" strokeWidth={1.9} />
             </button>
           </div>
-
-          {/* Subtitle: Category · Location */}
-          <p style={{
-            fontSize: '0.8125rem',
-            color: 'var(--color-text-muted)',
-            margin: '0 0 10px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}>
-            {subtitleParts.join(' · ')}
-          </p>
 
           {/* Group Buy row + slot bar */}
           {isGroupEnabled && (
@@ -263,7 +327,7 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
       </Link>
 
       {/* ── Price section + builder row ── */}
-      <div style={{ padding: '10px 14px 14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ padding: '14px 20px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
         {/* Price display */}
         {property.target_price != null && (() => {
@@ -276,8 +340,8 @@ export function PropertyCard({ property, compact = false }: PropertyCardProps) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <span style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: '1.375rem',
-                  fontWeight: 700,
+                  fontSize: '1.5rem',
+                  fontWeight: 800,
                   color: 'var(--color-terra)',
                   letterSpacing: '-0.02em',
                   lineHeight: 1,

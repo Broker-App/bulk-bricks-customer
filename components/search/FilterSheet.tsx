@@ -64,7 +64,6 @@ export function FilterSheet({ open, onClose }: FilterSheetProps) {
   const [maxPrice,     setMaxPrice]     = useState(searchParams.get('maxPrice') ?? '');
   const [sortBy,       setSortBy]       = useState(searchParams.get('sortBy') ?? '');
   const [featured,     setFeatured]     = useState(searchParams.get('featured') === 'true');
-  const [groupEnabled, setGroupEnabled] = useState(searchParams.get('group') === 'true');
 
   // ── Fetch Categories & Cities on first open ───────────────────
   useEffect(() => {
@@ -126,7 +125,7 @@ export function FilterSheet({ open, onClose }: FilterSheetProps) {
 
   // ── Active filter count ───────────────────────────────────────
   const activeCount = [category, typeId, city, area, minPrice, maxPrice, sortBy]
-    .filter(v => !!v).length + (featured ? 1 : 0) + (groupEnabled ? 1 : 0);
+    .filter(v => !!v).length + (featured ? 1 : 0);
 
   // ── Preset price helper ───────────────────────────────────────
   const applyPreset = (preset: typeof PRICE_PRESETS[number]) => {
@@ -149,7 +148,6 @@ export function FilterSheet({ open, onClose }: FilterSheetProps) {
     if (maxPrice)    params.set('maxPrice', maxPrice);
     if (sortBy)      params.set('sortBy', sortBy);
     if (featured)    params.set('featured', 'true');
-    if (groupEnabled) params.set('group', 'true');
     router.push(`/properties?${params.toString()}`);
     onClose();
   };
@@ -157,7 +155,7 @@ export function FilterSheet({ open, onClose }: FilterSheetProps) {
   const reset = () => {
     setCategory(''); setTypeId(''); setCity(''); setArea('');
     setMinPrice(''); setMaxPrice(''); setSortBy('');
-    setFeatured(false); setGroupEnabled(false);
+    setFeatured(false);
     router.push('/properties');
     onClose();
   };
@@ -331,10 +329,6 @@ export function FilterSheet({ open, onClose }: FilterSheetProps) {
             <button style={toggleBtn(featured)} onClick={() => setFeatured(!featured)}>
               <Star size={13} strokeWidth={2.5} />
               Featured Only
-            </button>
-            <button style={toggleBtn(groupEnabled)} onClick={() => setGroupEnabled(!groupEnabled)}>
-              <Users size={13} strokeWidth={2.5} />
-              Group Buy
             </button>
           </div>
         </div>

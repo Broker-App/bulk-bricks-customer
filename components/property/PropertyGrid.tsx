@@ -14,9 +14,9 @@ export function PropertyGrid({ properties, loading = false, skeletonCount = 6 }:
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '16px',
-          padding: '0',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '20px',
+          padding: '0 16px',
         }}
       >
         {Array.from({ length: skeletonCount }).map((_, i) => (
@@ -48,8 +48,9 @@ export function PropertyGrid({ properties, loading = false, skeletonCount = 6 }:
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-        gap: '16px',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '20px',
+        padding: '0 16px',
       }}
     >
       {properties.map(p => (
