@@ -69,8 +69,7 @@ export default function RegisterPage() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       // Database trigger creates profile instantly
-      router.push('/profile');
-      router.refresh();
+      router.replace('/profile');
     } else {
       setSuccess(true);
     }

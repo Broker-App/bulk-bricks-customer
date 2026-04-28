@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, Suspense } from 'react';
+import { useState, useRef, Suspense, useEffect } from 'react';
 import { Button } from '@/components/ui/buttons/Button';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -19,12 +19,20 @@ function LoginInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get('next') ?? '/profile';
+  const errorParam = searchParams.get('error');
   const supabase = createClient();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Handle non_customer error from redirect
+  useEffect(() => {
+    if (errorParam === 'non_customer') {
+      setError('This application is for customers only. Please sign in with a customer account.');
+    }
+  }, [errorParam]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -44,8 +52,7 @@ function LoginInner() {
       }
       return;
     }
-    router.push(next);
-    router.refresh();
+    router.replace(next);
   };
 
   return (
