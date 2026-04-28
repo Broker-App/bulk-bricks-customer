@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Prevent duplicate fetches on rapid auth state changes
   const fetchingRef = useRef(false);
 
-  // ── Fetch public.users profile ─────────────────────────────────────────────
+  // ── Fetch public.users profile (optional, for UI data) ───────────────────────
   const fetchProfile = useCallback(async (userId: string) => {
     if (fetchingRef.current) return;
     fetchingRef.current = true;
@@ -59,19 +59,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('users')
         .select('*')
         .eq('id', userId)
-        .eq('role', 'customer')
         .single();
 
       if (error || !data) {
-        // Non-customer account (builder/admin) — sign them out
-        await supabase.auth.signOut();
-        setSession(null);
-        setUser(null);
+        console.warn('Profile not found, but auth continues:', error);
         setProfile(null);
         return;
       }
 
-      setProfile(data as Customer);
+      // Only set profile if it's a customer account
+      if (data.role === 'customer') {
+        setProfile(data as Customer);
+      } else {
+        // Non-customer account - sign out
+        await supabase.auth.signOut();
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+      }
     } finally {
       fetchingRef.current = false;
     }
@@ -87,10 +92,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setLoading(false); // Auth state resolved, profile is optional
+      
+      // Fetch profile in background (non-blocking)
       if (session?.user) {
-        fetchProfile(session.user.id).finally(() => setLoading(false));
-      } else {
-        setLoading(false);
+        fetchProfile(session.user.id);
       }
     });
 
@@ -99,7 +105,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        
         if (session?.user) {
+          // Fetch profile in background (non-blocking)
           fetchProfile(session.user.id);
         } else {
           setProfile(null);

@@ -6,32 +6,28 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, UserPlus, AlertCircle, CheckCircle, Phone } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-
 export default function RegisterPage() {
-  const router   = useRouter();
+
+  const router = useRouter();
   const supabase = createClient();
-
-  const nameRef     = useRef<HTMLInputElement>(null);
-  const emailRef    = useRef<HTMLInputElement>(null);
-  const phoneRef    = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-  const confirmRef  = useRef<HTMLInputElement>(null);
-
-  const [showPass,    setShowPass]    = useState(false);
+  const confirmRef = useRef<HTMLInputElement>(null);
+  const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [loading,     setLoading]     = useState(false);
-  const [error,       setError]       = useState<string | null>(null);
-  const [success,     setSuccess]     = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
     const fullName = nameRef.current!.value.trim();
-    const email    = emailRef.current!.value.trim();
-    const phone    = phoneRef.current!.value.trim();
+    const email = emailRef.current!.value.trim();
+    const phone = phoneRef.current!.value.trim();
     const password = passwordRef.current!.value;
-    const confirm  = confirmRef.current!.value;
+    const confirm = confirmRef.current!.value;
 
     // Client-side validation
     if (!fullName) { setError('Please enter your full name.'); return; }
@@ -72,6 +68,7 @@ export default function RegisterPage() {
     // If email confirmation is ON → show the success/check-email state.
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
+      // Database trigger creates profile instantly
       router.push('/profile');
       router.refresh();
     } else {
@@ -100,18 +97,20 @@ export default function RegisterPage() {
             }}>
               <CheckCircle size={28} color="var(--color-success)" />
             </div>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.375rem', fontWeight: 700,
-              color: 'var(--color-text-primary)', margin: '0 0 10px', letterSpacing: '-0.02em' }}>
+            <h2 style={{
+              fontFamily: 'var(--font-display)', fontSize: '1.375rem', fontWeight: 700,
+              color: 'var(--color-text-primary)', margin: '0 0 10px', letterSpacing: '-0.02em'
+            }}>
               Check your email
             </h2>
             <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.7, fontSize: '0.9rem', margin: '0 0 28px' }}>
               We&apos;ve sent a confirmation link to your email address. Click it to activate your account.
             </p>
             <Button asChild>
-                <Link href="/auth/login">
-                  Back to Sign In
-                </Link>
-              </Button>
+              <Link href="/auth/login">
+                Back to Sign In
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -168,8 +167,10 @@ export default function RegisterPage() {
 
             {/* Full Name */}
             <div>
-              <label htmlFor="reg-name" style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600,
-                color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
+              <label htmlFor="reg-name" style={{
+                display: 'block', fontSize: '0.8125rem', fontWeight: 600,
+                color: 'var(--color-text-secondary)', marginBottom: '8px'
+              }}>
                 Full Name
               </label>
               <input
@@ -191,8 +192,10 @@ export default function RegisterPage() {
 
             {/* Email */}
             <div>
-              <label htmlFor="reg-email" style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600,
-                color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
+              <label htmlFor="reg-email" style={{
+                display: 'block', fontSize: '0.8125rem', fontWeight: 600,
+                color: 'var(--color-text-secondary)', marginBottom: '8px'
+              }}>
                 Email
               </label>
               <input
@@ -214,14 +217,16 @@ export default function RegisterPage() {
 
             {/* Mobile Number */}
             <div>
-              <label htmlFor="reg-phone" style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600,
-                color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
+              <label htmlFor="reg-phone" style={{
+                display: 'block', fontSize: '0.8125rem', fontWeight: 600,
+                color: 'var(--color-text-secondary)', marginBottom: '8px'
+              }}>
                 Mobile Number <span style={{ color: 'var(--color-terra)', fontWeight: 700 }}>*</span>
               </label>
               <div className="neuro-input" style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ 
-                  padding: '0 14px', 
-                  color: 'var(--color-text-muted)', 
+                <span style={{
+                  padding: '0 14px',
+                  color: 'var(--color-text-muted)',
                   fontSize: '0.9375rem',
                   borderRight: '1px solid var(--color-border-subtle)',
                   paddingRight: '8px'
@@ -245,9 +250,9 @@ export default function RegisterPage() {
                   }}
                 />
               </div>
-              <p style={{ 
-                fontSize: '0.75rem', 
-                color: 'var(--color-text-muted)', 
+              <p style={{
+                fontSize: '0.75rem',
+                color: 'var(--color-text-muted)',
                 margin: '4px 0 0',
                 lineHeight: 1.4
               }}>
@@ -257,8 +262,10 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <label htmlFor="reg-password" style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600,
-                color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
+              <label htmlFor="reg-password" style={{
+                display: 'block', fontSize: '0.8125rem', fontWeight: 600,
+                color: 'var(--color-text-secondary)', marginBottom: '8px'
+              }}>
                 Password
               </label>
               <div className="neuro-input" style={{ display: 'flex', alignItems: 'center' }}>
@@ -279,8 +286,10 @@ export default function RegisterPage() {
                 />
                 <button type="button" onClick={() => setShowPass(v => !v)}
                   aria-label={showPass ? 'Hide password' : 'Show password'}
-                  style={{ padding: '0 14px', background: 'none', border: 'none',
-                    cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center' }}>
+                  style={{
+                    padding: '0 14px', background: 'none', border: 'none',
+                    cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center'
+                  }}>
                   {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
@@ -288,8 +297,10 @@ export default function RegisterPage() {
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="reg-confirm" style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600,
-                color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
+              <label htmlFor="reg-confirm" style={{
+                display: 'block', fontSize: '0.8125rem', fontWeight: 600,
+                color: 'var(--color-text-secondary)', marginBottom: '8px'
+              }}>
                 Confirm Password
               </label>
               <div className="neuro-input" style={{ display: 'flex', alignItems: 'center' }}>
@@ -309,8 +320,10 @@ export default function RegisterPage() {
                 />
                 <button type="button" onClick={() => setShowConfirm(v => !v)}
                   aria-label={showConfirm ? 'Hide password' : 'Show password'}
-                  style={{ padding: '0 14px', background: 'none', border: 'none',
-                    cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center' }}>
+                  style={{
+                    padding: '0 14px', background: 'none', border: 'none',
+                    cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center'
+                  }}>
                   {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
@@ -322,12 +335,13 @@ export default function RegisterPage() {
               type="submit"
               disabled={loading}
               loading={loading}
-              style={{ width: '100%', padding: '14px', fontSize: '0.9375rem', marginTop: '4px',
-                opacity: loading ? 0.7 : 1 }}
+              style={{
+                width: '100%', padding: '14px', fontSize: '0.9375rem', marginTop: '4px',
+                opacity: loading ? 0.7 : 1
+              }}
             >
               {loading ? 'Creating account...' : 'Create Account'}
             </Button>
-
           </form>
 
           {/* T&C note */}

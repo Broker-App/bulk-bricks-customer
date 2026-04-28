@@ -4,7 +4,7 @@ import { useState, useRef, Suspense } from 'react';
 import { Button } from '@/components/ui/buttons/Button';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
@@ -16,28 +16,23 @@ export default function LoginPage() {
 }
 
 function LoginInner() {
-  const router       = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const next         = searchParams.get('next') ?? '/profile';
-  const supabase     = createClient();
-
-  const emailRef    = useRef<HTMLInputElement>(null);
+  const next = searchParams.get('next') ?? '/profile';
+  const supabase = createClient();
+  const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-
   const [showPass, setShowPass] = useState(false);
-  const [loading,  setLoading]  = useState(false);
-  const [error,    setError]    = useState<string | null>(null);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
-    const email    = emailRef.current!.value.trim();
+    const email = emailRef.current!.value.trim();
     const password = passwordRef.current!.value;
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-
     if (error) {
       setLoading(false);
       if (error.message.includes('Invalid login')) {
@@ -49,7 +44,6 @@ function LoginInner() {
       }
       return;
     }
-
     router.push(next);
     router.refresh();
   };
@@ -122,8 +116,10 @@ function LoginInner() {
             <div>
               <label
                 htmlFor="login-email"
-                style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600,
-                  color: 'var(--color-text-secondary)', marginBottom: '8px' }}
+                style={{
+                  display: 'block', fontSize: '0.8125rem', fontWeight: 600,
+                  color: 'var(--color-text-secondary)', marginBottom: '8px'
+                }}
               >
                 Email
               </label>
@@ -149,8 +145,10 @@ function LoginInner() {
             <div>
               <label
                 htmlFor="login-password"
-                style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600,
-                  color: 'var(--color-text-secondary)', marginBottom: '8px' }}
+                style={{
+                  display: 'block', fontSize: '0.8125rem', fontWeight: 600,
+                  color: 'var(--color-text-secondary)', marginBottom: '8px'
+                }}
               >
                 Password
               </label>
@@ -197,7 +195,6 @@ function LoginInner() {
             >
               {loading ? 'Signing in…' : 'Sign In'}
             </Button>
-
           </form>
 
           {/* Footer link */}
