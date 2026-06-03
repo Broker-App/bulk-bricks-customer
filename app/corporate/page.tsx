@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/buttons/Button';
+import { createClient } from '@/lib/supabase/client';
 
 /* ── Static data ──────────────────────────────────────────────────── */
 
@@ -144,9 +145,36 @@ export default function CorporatePage() {
     if (!form.phone.trim()) { setError('Please enter your contact number.'); return; }
     if (!form.unitCount.trim()) { setError('Please specify the number of units.'); return; }
     setMode('submitting');
-    await new Promise(r => setTimeout(r, 1200));
-    // TODO: wire to supabase / API route
-    setMode('success');
+
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const payload: Record<string, unknown> = {
+      type: 'corporate',
+      message: form.notes.trim() || null,
+      guest_name: form.fullName.trim(),
+      guest_email: form.email.trim() || null,
+      guest_phone: form.phone.trim(),
+      org_name: form.orgName.trim(),
+      unit_count: parseInt(form.unitCount, 10) || null,
+      config: form.config || null,
+      budget: form.budget.trim() || null,
+      purpose: form.purpose || null,
+      timeline: form.timeline || null,
+      project_types: form.projectTypes.length > 0 ? form.projectTypes : null,
+    };
+
+    if (user) {
+      payload.customer_id = user.id;
+    }
+
+    const { error: sbError } = await supabase.from('queries').insert(payload);
+    if (sbError) {
+      setError('Something went wrong. Please try again.');
+      setMode('idle');
+    } else {
+      setMode('success');
+    }
   };
 
   return (

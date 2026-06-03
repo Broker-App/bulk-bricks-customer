@@ -1,5 +1,7 @@
 # 🏗️ BULK BRICKS CUSTOMER APP - COMPLETE OVERVIEW & FEATURES
 
+> **Implementation Status**: This document describes both implemented features and planned enhancements. Features marked with *(Coming Soon)* are currently under development. The app is in active development phase with core property discovery, authentication, and basic user flows fully functional.
+
 ## 📋 APP IDENTITY & PURPOSE
 
 **Bulk Bricks Customer PWA** is a mobile-first Progressive Web Application for property discovery in the Indian real estate market. It serves as a customer-facing marketplace where property buyers can browse verified listings from trusted builders and unlock premium access to connect directly with builders via WhatsApp groups.
@@ -17,11 +19,13 @@
 ### Paid Access System
 The app operates on a **premium access model**:
 - Property browsing is **FREE** - users can view all details, images, amenities
-- **Contact access requires payment** - customers pay a `customer_access_fee` via Razorpay
-- Once paid, customers get:
+- **Contact access requires payment** - customers pay a `customer_access_fee` via Razorpay *(Coming Soon)*
+- Once paid, customers will get:
   - WhatsApp group link for the property
   - Direct builder contact information
   - Permanent access to that property's details
+
+> **Note**: Payment integration is currently under development. Users can view all property details for free.
 
 ### Group Buying Feature
 - Select properties support **group buying mode**
@@ -47,9 +51,10 @@ The app operates on a **premium access model**:
 - **Real-time**: Supabase real-time subscriptions
 - **File Storage**: Supabase Storage for property images
 
-### Payment Integration
+### Payment Integration *(Coming Soon)*
 - **Payment Gateway**: Razorpay
 - **Flow**: Customer selects property → Initiates payment → Razorpay checkout → Success → Access granted
+- **Current Status**: Payment UI shows placeholder - integration in progress
 
 ---
 
@@ -82,12 +87,12 @@ The app operates on a **premium access model**:
 Home Page → Browse Categories → View Featured → Search/Filter → Property Cards → Property Details
 ```
 
-### 2. Access Unlock Flow
+### 2. Access Unlock Flow *(Coming Soon)*
 ```
 Property Details → Login (if guest) → "Unlock Access" CTA → Razorpay Payment → Payment Success → WhatsApp Group Access
 ```
 
-### 3. Group Buying Flow
+### 3. Group Buying Flow *(Coming Soon)*
 ```
 Property Details → Group Buy Section → Slot Progress → "Join Group" → Payment → Slot Confirmation
 ```
@@ -95,6 +100,11 @@ Property Details → Group Buy Section → Slot Progress → "Join Group" → Pa
 ### 4. Builder Communication Flow
 ```
 Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query → Builder Response
+```
+
+### 5. Corporate & Bulk Enquiry Flow
+```
+Corporate Page → "Submit Requirement" Form (capturing org, unit count, budget, timeline, etc.) → Database (Queries Table) → Offline Team Follow-up
 ```
 
 ---
@@ -107,18 +117,27 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 - **Property Detail** (`/properties/[id]`): Complete property information with access gate
 - **Builders** (`/builders`): Directory of verified builders
 - **Builder Profile** (`/builders/[id]`): Individual builder information and listings
+- **About** (`/about`): Company information and mission
+- **FAQ** (`/faq`): Frequently asked questions
+- **Contact** (`/contact`): Contact form and support
+- **Corporate** (`/corporate`): Corporate bulk buying information and detailed enquiry form (integrated with Supabase `queries` table)
+- **Privacy Policy** (`/privacy`): Privacy policy details
+- **Terms & Conditions** (`/terms`): Terms of service
+- **Refund Policy** (`/refund`): Refund policy details
 
 ### Authentication Pages
 - **Login** (`/auth/login`): Email/password or Google OAuth login
 - **Register** (`/auth/register`): New customer registration
-- **Email Verification** (`/auth/verify-email`): Email confirmation flow
+- **OAuth Callback** (`/auth/callback`): Google OAuth callback handler
 
 ### Protected Pages (Auth Required)
 - **My Properties** (`/my-properties`): Customer's unlocked properties list
 - **My Queries** (`/my-queries`): Customer's communication history with builders
 - **Profile** (`/profile`): Account settings, theme toggle, personal information
+- **Saved Properties** (`/saved`): Wishlist/favorited properties
+- **Profile Edit** (`/profile/edit`): Edit personal information
 
-### Payment Pages
+### Payment Pages *(Coming Soon)*
 - **Payment Success** (`/payment/success`): Post-payment confirmation and access grant
 - **Payment Failed** (`/payment/failed`): Payment failure handling
 
@@ -131,7 +150,7 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 - **Media Gallery**: Multiple images with carousel navigation
 - **Amenities**: Complete list with icons
 - **Builder Information**: Company profile, verification status, contact
-- **Location**: Map integration with directions
+- **Location**: City and area information
 - **Pricing**: Clear price formatting in Indian Rupees (₹)
 
 ### Property Status Indicators
@@ -142,11 +161,11 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 - **Unlocked**: Access status for customer's properties
 
 ### Interactive Elements
-- **Image Gallery**: Swipeable carousel with zoom capability
+- **Image Gallery**: Swipeable carousel with navigation
 - **Favorite/Save**: Wishlist functionality for later reference
-- **Share**: Social sharing capabilities
-- **Contact Builder**: Direct communication channel
-- **WhatsApp Group**: Direct access to property-specific groups
+- **Contact Builder**: Direct communication channel via form
+- **WhatsApp Group**: Direct access to property-specific groups (after access unlock)
+- **EMI Calculator**: Built-in mortgage/EMI calculator for properties
 
 ---
 
@@ -161,11 +180,9 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 - **Advanced Filters**: Featured only, verified builders, group buy properties
 
 ### User Experience
-- **Real-time Search**: Instant results as user types
 - **Filter Sheets**: Bottom sheet UI for mobile-friendly filtering
-- **Saved Searches**: Remember user preferences
-- **Recent Searches**: Quick access to previous searches
-- **Location Detection**: GPS-based property suggestions
+- **Category Pills**: Quick category filtering
+- **Conversational Search**: Natural language search interface
 
 ---
 
@@ -174,20 +191,18 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 ### Authentication Methods
 - **Email + Password**: Traditional registration and login
 - **Google OAuth**: One-click Google account authentication
-- **Phone Verification**: Optional phone number verification
 - **Session Management**: Secure cookie-based sessions via Supabase
 
 ### Security Features
 - **Role-based Access**: Customer-only access restrictions
 - **Data Privacy**: Secure handling of personal information
-- **Payment Security**: Razorpay's secure payment processing
 - **API Security**: Row-level security in Supabase
 
 ---
 
 ## 💳 PAYMENT & MONETIZATION
 
-### Payment Flow
+### Payment Flow *(Coming Soon)*
 1. **Property Selection**: Customer chooses property to unlock
 2. **Access Fee Display**: Clear pricing information
 3. **Payment Initiation**: Razorpay checkout integration
@@ -195,7 +210,7 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 5. **Access Grant**: Immediate access upon successful payment
 6. **Receipt Generation**: Transaction records and invoices
 
-### Payment Features
+### Payment Features *(Coming Soon)*
 - **Multiple Payment Methods**: Credit cards, debit cards, UPI, net banking
 - **Secure Processing**: PCI-compliant payment handling
 - **Instant Access**: Immediate access grant after payment
@@ -207,45 +222,24 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 ## 👥 USER ACCOUNT MANAGEMENT
 
 ### Profile Features
-- **Personal Information**: Name, email, phone management
-- **Preferences**: Theme selection, notification settings
-- **Security**: Password change, 2FA setup
-- **Activity History**: Property views, queries, payments
+- **Personal Information**: Name, email display
+- **Preferences**: Theme selection (light/dark mode)
+- **Quick Access**: Links to saved properties, my properties, my queries
 
 ### My Properties Dashboard
-- **Unlocked Properties**: List of paid-access properties
-- **WhatsApp Groups**: Quick access to all joined groups
-- **Builder Contacts**: Direct contact information
-- **Payment History**: Transaction records and receipts
+- **Unlocked Properties**: List of properties with access granted
+- **WhatsApp Groups**: Quick access to joined groups (when payment is implemented)
 
 ### Communication Management
-- **Query History**: All builder communications
+- **Query History**: All builder communications and corporate bulk enquiries
 - **Response Tracking**: Builder reply status
-- **Message Templates**: Quick response options
-- **Notification Settings**: Email/SMS preferences
-
----
-
-## 📊 ADMINISTRATIVE FEATURES
-
-### Content Management
-- **Property Approval**: Builder-submitted property review
-- **Builder Verification**: Company verification process
-- **Content Moderation**: User-generated content review
-- **Category Management**: Property type organization
-
-### Analytics & Reporting
-- **User Analytics**: Customer behavior and preferences
-- **Property Performance**: Listing views and conversion rates
-- **Revenue Tracking**: Payment and access fee analytics
-- **Builder Insights**: Performance metrics for builders
 
 ---
 
 ## 🚀 PERFORMANCE & OPTIMIZATION
 
 ### Technical Optimizations
-- **PWA Features**: Offline support, install prompts, push notifications
+- **PWA Features**: Offline support, install prompts
 - **Image Optimization**: Next.js Image component with WebP support
 - **Caching Strategy**: Service worker caching for API responses
 - **Lazy Loading**: Progressive content loading
@@ -264,17 +258,14 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 
 ### Third-Party Services
 - **Supabase**: Database, authentication, storage
-- **Razorpay**: Payment processing
-- **Google Maps**: Location services and maps
+- **Razorpay**: Payment processing *(Coming Soon)*
 - **Google OAuth**: Social authentication
 - **WhatsApp**: Group communication (via deep links)
 
 ### API Integrations
 - **Property Data**: Real-time property information
 - **Builder Data**: Company profiles and verification
-- **Payment Processing**: Secure transaction handling
-- **Analytics**: User behavior tracking
-- **Notifications**: Email and SMS notifications
+- **Payment Processing**: Secure transaction handling *(Coming Soon)*
 
 ---
 
@@ -283,9 +274,20 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 ### Planned Enhancements
 - **AI Recommendations**: Personalized property suggestions
 - **Virtual Tours**: 360° property viewing
-- **Mortgage Calculator**: Integrated loan calculator
 - **Document Management**: Digital document storage
 - **Video Calls**: In-app video consultation with builders
+- **Google Maps Integration**: Interactive map views
+- **Real-time Search**: Instant search results as user types
+- **Saved Searches**: Remember user search preferences
+- **Recent Searches**: Quick access to previous searches
+- **GPS Location Detection**: Location-based property suggestions
+- **Email Verification**: Email confirmation flow for new accounts
+- **Phone Verification**: Optional phone number verification
+- **2FA**: Two-factor authentication for enhanced security
+- **Notification Settings**: Email/SMS preference management
+- **Activity History**: Track property views, queries, and payments
+- **Message Templates**: Quick response options for queries
+- **Admin Dashboard**: Content management and analytics
 
 ### Expansion Opportunities
 - **Geographic Expansion**: Multiple cities and regions
@@ -318,17 +320,11 @@ Property Details → "Contact Builder" → Bottom Sheet Form → Submit Query �
 
 ### Development Workflow
 - **Agile Development**: Iterative development with regular releases
-- **Code Quality**: TypeScript, ESLint, Prettier for code consistency
-- **Testing**: Unit tests, integration tests, E2E testing
-- **CI/CD**: Automated deployment and testing pipeline
-- **Monitoring**: Real-time error tracking and performance monitoring
+- **Code Quality**: TypeScript, ESLint for code consistency
 
 ### Maintenance Strategy
 - **Regular Updates**: Security patches and feature updates
-- **Performance Monitoring**: Continuous performance optimization
 - **User Feedback**: Regular user feedback collection and implementation
-- **Security Audits**: Regular security assessments
-- **Scalability Planning**: Infrastructure scaling based on growth
 
 ---
 
