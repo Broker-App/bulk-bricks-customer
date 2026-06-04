@@ -4,6 +4,9 @@ import FilterBar from './FilterBar';
 import { PropertiesInfiniteScrollClient } from './PropertiesInfiniteScrollClient';
 import type { Property, PropertyCategory, PropertyFilters } from '@/types';
 
+// ISR: Revalidate every 5 minutes (300 seconds) for property listings
+export const revalidate = 300;
+
 export const metadata = {
   title: 'Properties — Bulk Bricks',
   description: 'Browse all active property listings on Bulk Bricks.',

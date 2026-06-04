@@ -11,6 +11,9 @@ import { Chip } from '@/components/ui/Chip';
 import { formatINR } from '@/utils/format';
 import type { Property, Amenity } from '@/types';
 
+// ISR: Revalidate every 10 minutes (600 seconds) for property details
+export const revalidate = 600;
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }

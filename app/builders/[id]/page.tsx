@@ -8,6 +8,9 @@ import { Globe, ShieldCheck, ArrowLeft, Award, Calendar, MapPin, Building } from
 import type { Builder, Property } from '@/types';
 import { ActivityStats } from '@/components/builder/ActivityStats';
 
+// ISR: Revalidate every 10 minutes (600 seconds) for builder details
+export const revalidate = 600;
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }

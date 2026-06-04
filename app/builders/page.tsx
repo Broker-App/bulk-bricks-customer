@@ -1,6 +1,9 @@
 import { fetchBuildersPaginated } from '@/lib/queries/builders';
 import { BuildersClient } from '@/components/builder/BuildersClient';
 
+// ISR: Revalidate every 5 minutes (300 seconds) for builder listings
+export const revalidate = 300;
+
 export const metadata = {
   title: 'Builders - Bulk Bricks',
   description: 'Browse verified property builders on Bulk Bricks.',
