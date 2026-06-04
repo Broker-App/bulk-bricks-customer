@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChevronLeft, User } from 'lucide-react';
+import { useThemeContext } from '@/contexts/ThemeContext';
 import { BOTTOM_NAV_TABS } from '@/lib/navigation';
 
 const PAGE_TITLES: Record<string, string> = {
@@ -46,10 +47,12 @@ const iconBtnStyle: React.CSSProperties = {
 export function MobileTopBar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme } = useThemeContext();
 
   const title = getTitle(pathname);
   const showBack = !ROOT_PATHS.has(pathname);
   const isProfile = pathname === '/profile';
+  const isHome = pathname === '/';
 
   return (
     <header
@@ -82,23 +85,40 @@ export function MobileTopBar() {
         <div style={{ width: '8px', flexShrink: 0 }} />
       )}
 
-      {/* Page title — left aligned, fills remaining space */}
-      <p
-        style={{
-          flex: 1,
-          fontFamily: 'var(--font-display)',
-          fontSize: '1.0625rem',
-          fontWeight: 700,
-          color: 'var(--color-text-primary)',
-          letterSpacing: '-0.01em',
-          margin: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {title}
-      </p>
+      {/* Page title or logo — left aligned, fills remaining space */}
+      {isHome ? (
+        <img
+          src={theme === 'dark' ? '/dark-theme.png' : '/logo.png'}
+          alt="Bulk Bricks"
+          style={{
+            height: '46px',
+            width: 'auto',
+            objectFit: 'contain',
+            marginRight: '8px',
+            flexShrink: 0,
+          }}
+        />
+      ) : (
+        <p
+          style={{
+            flex: 1,
+            fontFamily: 'var(--font-display)',
+            fontSize: '1.0625rem',
+            fontWeight: 700,
+            color: 'var(--color-text-primary)',
+            letterSpacing: '-0.01em',
+            margin: 0,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {title}
+        </p>
+      )}
+
+      {/* Spacer to push profile to right */}
+      <div style={{ flex: 1 }} />
 
       {/* Profile icon — always on right, highlighted when active */}
       <Link

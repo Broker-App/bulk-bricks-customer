@@ -223,7 +223,7 @@ export default async function BuilderProfilePage({ params }: PageProps) {
           }} />}
         </div>
 
-        {/* Properties Section */}
+        {/* Properties Section
         <div style={{
           background: 'var(--color-surface)',
           borderRadius: 'var(--radius-xl)',
@@ -268,7 +268,7 @@ export default async function BuilderProfilePage({ params }: PageProps) {
             )}
           </div>
           <PropertyGrid properties={props} />
-        </div>
+        </div> */}
       </div>
     </div>
   );

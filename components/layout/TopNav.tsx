@@ -6,6 +6,7 @@ import { LogOut } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { TOP_NAV_ROUTES } from '@/lib/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useThemeContext } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/buttons/Button';
 
 function getInitials(name: string): string {
@@ -20,6 +21,7 @@ function getInitials(name: string): string {
 export function TopNav() {
   const pathname = usePathname();
   const { profile, loading, signOut } = useAuth();
+  const { theme } = useThemeContext();
 
   return (
     <header
@@ -32,11 +34,21 @@ export function TopNav() {
     >
       {/* Logo */}
       <Link href="/" style={{
-        fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.25rem',
-        color: 'var(--color-text-primary)', textDecoration: 'none',
-        letterSpacing: '-0.02em', flexShrink: 0,
+        height: '48px',
+        display: 'flex',
+        alignItems: 'center',
+        textDecoration: 'none',
+        flexShrink: 0,
       }}>
-        Bulk<span style={{ color: 'var(--color-terra)' }}>Bricks</span>
+        <img
+          src={theme === 'dark' ? '/dark-theme.png' : '/logo.png'}
+          alt="Bulk Bricks"
+          style={{
+            height: '120%',
+            width: 'auto',
+            maxWidth: '180px',
+          }}
+        />
       </Link>
 
       {/* Nav links */}

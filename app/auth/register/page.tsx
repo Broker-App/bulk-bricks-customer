@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, UserPlus, AlertCircle, CheckCircle, Phone } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { useThemeContext } from '@/contexts/ThemeContext';
 export default function RegisterPage() {
 
   const router = useRouter();
+  const { theme } = useThemeContext();
   const supabase = createClient();
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -125,13 +127,20 @@ export default function RegisterPage() {
       <div style={{ width: '100%', maxWidth: '420px' }}>
 
         {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <p style={{
-            fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700,
-            color: 'var(--color-terra)', letterSpacing: '-0.02em', margin: 0,
-          }}>
-            Bulk<span style={{ color: 'var(--color-text-primary)' }}>Bricks</span>
-          </p>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: '16px',
+        }}>
+          <img
+            src={theme === 'dark' ? '/dark-theme.png' : '/logo.png'}
+            alt="Bulk Bricks"
+            style={{
+              height: '90px',
+              width: 'auto',
+            }}
+          />
         </div>
 
         {/* Card */}

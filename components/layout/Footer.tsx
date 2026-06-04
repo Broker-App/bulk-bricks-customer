@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Mail, Phone, MessageCircle, ArrowRight } from 'lucide-react';
+import { useThemeContext } from '@/contexts/ThemeContext';
 import { SOCIAL_LINKS } from '@/lib/constants/social';
 
 /* ── Brand SVG icons ─────────────────────────────────────────────── */
@@ -122,6 +123,7 @@ const CONTACT_CHANNELS = [
 ];
 
 export function Footer() {
+  const { theme } = useThemeContext();
   return (
     <footer
       style={{
@@ -286,16 +288,15 @@ export function Footer() {
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px 24px' }}>
         {/* Brand + tagline */}
         <div style={{ marginBottom: '32px' }}>
-          <p style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.5rem',
-            fontWeight: 700,
-            color: 'var(--color-terra)',
-            marginBottom: '6px',
-            letterSpacing: '-0.02em',
-          }}>
-            Bulk<span style={{ color: 'var(--color-text-primary)' }}>Bricks</span>
-          </p>
+          <img
+            src={theme === 'dark' ? '/dark-theme.png' : '/logo.png'}
+            alt="Bulk Bricks"
+            style={{
+              height: '70px',
+              width: 'auto',
+              marginBottom: '16px',
+            }}
+          />
           <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', lineHeight: 1.6, maxWidth: '320px' }}>
             Enjoy group benefits — connect directly with verified builders through exclusive WhatsApp groups.
           </p>
