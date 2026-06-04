@@ -42,7 +42,7 @@ export const viewport = {
 };
 
 export const icons = {
-  icon: '/favicon.png',
+  icon: '/logo-square.png',
   apple: '/logo-square.png',
 };
 
