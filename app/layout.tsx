@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { WishlistProvider } from '@/contexts/WishlistContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CustomerLayout } from '@/components/layout/CustomerLayout';
+import { ProgressBarProvider } from '@/components/ProgressBarProvider';
 import { THEME_SCRIPT } from '@/utils/theme';
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <ProgressBarProvider />
         <ThemeProvider>
           <AuthProvider>
             <WishlistProvider>
